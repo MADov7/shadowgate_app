@@ -1,0 +1,36 @@
+#main {
+  position: relative;
+  z-index: var(--z-content);
+  outline: none;
+}
+
+/* Static experience backdrop (no WebGL or reduced motion): calm, architectural, no movement. */
+.sg-static-bg {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 620px at 78% 18%, rgba(53, 242, 196, 0.1), transparent 60%),
+    radial-gradient(900px 600px at 10% 90%, rgba(53, 242, 196, 0.06), transparent 60%),
+    linear-gradient(rgba(243, 246, 250, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(243, 246, 250, 0.03) 1px, transparent 1px),
+    var(--sg-navy);
+  background-size:
+    auto,
+    auto,
+    56px 56px,
+    56px 56px,
+    auto;
+}
+
+/* Fine atmospheric film over everything (very subtle vignette + top fade for the nav). */
+.sg-atmo {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-content);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(7, 11, 20, 0.55), transparent 140px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(3, 5, 10, 0.55) 100%);
+}

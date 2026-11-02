@@ -1,0 +1,18 @@
+export const navEn = {
+  label: 'Main navigation',
+  home: 'Home',
+  business: 'Business Services',
+  personal: 'Personal Services',
+  radar: 'Threat Radar',
+  packages: 'Packages',
+  contact: 'Contact',
+  cta: 'Request a Security Assessment',
+  ctaShort: 'Request assessment',
+  basket: 'Request basket',
+  basketCount: 'Request basket, {count} item(s)',
+  menuOpen: 'Open menu',
+  menuClose: 'Close menu',
+  progress: 'Page progress',
+  homeLink: 'Shadow Gate — back to top',
+  settings: 'Display settings',
+} as const;

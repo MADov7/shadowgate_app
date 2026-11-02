@@ -1,0 +1,110 @@
+/* SHADOW GATE — design tokens. Every colour, size and timing used in the UI comes from here. */
+:root {
+  /* Core palette (brand) */
+  --sg-navy: #070b14; /* Midnight navy — primary background */
+  --sg-teal: #35f2c4; /* Electric teal — brand / protection / focus */
+  --sg-white: #f3f6fa; /* Soft white — primary text */
+
+  /* Navy elevation steps (derived) */
+  --sg-navy-1: #0a1020;
+  --sg-navy-2: #0e1628;
+  --sg-navy-3: #142035;
+  --sg-navy-4: #1b2a44;
+
+  /* Text tones (all ≥ 4.5:1 on --sg-navy) */
+  --sg-text: var(--sg-white);
+  --sg-text-muted: #a9b4c4;
+  --sg-text-faint: #8592a5;
+  --sg-on-teal: #04110d;
+
+  /* Teal tints */
+  --sg-teal-08: rgba(53, 242, 196, 0.08);
+  --sg-teal-14: rgba(53, 242, 196, 0.14);
+  --sg-teal-24: rgba(53, 242, 196, 0.24);
+  --sg-teal-40: rgba(53, 242, 196, 0.4);
+  --sg-teal-soft: #8af7da;
+
+  /* Lines & surfaces */
+  --sg-line: rgba(243, 246, 250, 0.08);
+  --sg-line-strong: rgba(243, 246, 250, 0.16);
+  --sg-glass: rgba(10, 16, 32, 0.62);
+  --sg-glass-strong: rgba(10, 16, 32, 0.86);
+
+  /* Semantic threat colours — used ONLY for simulated threat indicators */
+  --sg-threat: #ff4d5e; /* restrained warning red */
+  --sg-threat-12: rgba(255, 77, 94, 0.12);
+  --sg-phishing: #ffb547;
+  --sg-login: #b99cff;
+  --sg-scanning: #5cc8ff;
+  --sg-traffic: #ff4d5e;
+  --sg-success: var(--sg-teal);
+
+  /* Typography */
+  --font-sans: 'Manrope Variable', 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-ar: 'Tajawal', 'Manrope Variable', system-ui, 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --font-body: var(--font-sans);
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --fs-2xl: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+  --fs-3xl: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+  --fs-4xl: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+  --fs-mono: 0.6875rem;
+
+  --lh-tight: 1.08;
+  --lh-snug: 1.25;
+  --lh-body: 1.6;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+  --gutter: clamp(16px, 4vw, 40px);
+  --container: 1240px;
+
+  /* Radii */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+
+  /* Elevation & glow (use glow selectively) */
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -20px rgba(0, 0, 0, 0.75);
+  --glow-teal: 0 0 0 1px var(--sg-teal-24), 0 0 28px -6px var(--sg-teal-40);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 140ms;
+  --dur-2: 240ms;
+  --dur-3: 420ms;
+
+  /* Layers */
+  --z-canvas: 0;
+  --z-content: 1;
+  --z-sticky: 20;
+  --z-nav: 50;
+  --z-welcome: 80;
+  --z-toast: 90;
+
+  --nav-h: 72px;
+  color-scheme: dark;
+}
+
+html[lang='ar'] {
+  --font-body: var(--font-ar);
+}

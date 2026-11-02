@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#070B14" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Shadow Gate offers understandable cybersecurity assessments, account protection, security awareness, consultations and ongoing reviews for small businesses and individuals."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>SHADOW GATE — Cybersecurity services for businesses and individuals</title>
+    <script>
+      // Set language/direction and motion preference before first paint (no layout flash).
+      (function () {
+        try {
+          var root = document.documentElement;
+          var q = new URLSearchParams(location.search);
+          var lang = q.get('lang') || localStorage.getItem('sg-lang');
+          if (lang === 'ar') {
+            root.lang = 'ar';
+            root.dir = 'rtl';
+          }
+          var m = q.get('motion') || localStorage.getItem('sg-motion');
+          var reduced = m === 'reduced' || (m !== 'full' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+          root.dataset.motion = reduced ? 'reduced' : 'full';
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <div style="padding: 24px; font-family: system-ui; color: #f3f6fa; background: #070b14">
+        SHADOW GATE needs JavaScript for the interactive storefront. Contact and service information is
+        available once JavaScript is enabled.
+      </div>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

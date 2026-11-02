@@ -1,0 +1,11 @@
+.sg-stage {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-canvas);
+  pointer-events: none;
+  background: var(--sg-navy);
+}
+.sg-stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
