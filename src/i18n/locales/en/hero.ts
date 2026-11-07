@@ -1,4 +1,22 @@
-// OWNER: builder agent for the 'hero' area. Replace these placeholder keys freely; keep ar/hero.ts in sync.
+// Scene A — hero. Telemetry labels are decorative HUD details (never statistics).
 export const heroEn = {
-  title: 'Hero',
+  eyebrow: 'Cybersecurity for small businesses & individuals',
+  titleLine1: 'Your business moves forward.',
+  titleLine2: 'Your protection stays ahead.',
+  lead: 'Shadow Gate helps small businesses, company websites, online stores and individuals strengthen their security — with clear assessments, account protection, security awareness, consultations and ongoing reviews.',
+  ctaPrimary: 'Protect My Business',
+  ctaSecondary: 'Explore Services',
+  valuesLabel: 'What working with Shadow Gate looks like',
+  value1Title: 'Clear scopes',
+  value1Text: 'Every service states what is covered, what is not, and what you receive.',
+  value2Title: 'Practical guidance',
+  value2Text: 'Plain-language findings with prioritised steps your team can act on.',
+  value3Title: 'Easy selection',
+  value3Text: 'Compare services and packages, then build one request in a few clicks.',
+  teleCore: 'SG//CORE ONLINE (DEMO)',
+  teleSurfaces: 'WEBSITE · EMAIL · CLOUD · ACCOUNTS',
+  teleLayers: 'PROTECTION LAYERS · 05',
+  teleScene: 'SCENE A // ARRIVAL',
+  teleScope: 'SCOPE // BUSINESS · INDIVIDUAL',
+  artCaption: 'Data core — illustrative visual',
 } as const;

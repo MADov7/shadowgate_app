@@ -1,0 +1,554 @@
+/* Scene A — hero. Copy on the start side over a scrim; the 3D data core (world-core) on the end side,
+   centred ≈ 67% across / 50% down the first viewport (from CAM_KEYS T=0) — the HUD below frames it. */
+.hero {
+  /* Fallbacks; Hero.tsx overwrites these with the projected core (coreFrame.ts). */
+  --core-x: 67.5vw;
+  --core-y: 50svh;
+  --core-d: 62svh;
+  position: relative;
+  z-index: var(--z-content);
+  display: flex;
+  flex-direction: column;
+  min-height: 106svh;
+  isolation: isolate;
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(7, 11, 20, 0.86) 0%, rgba(7, 11, 20, 0.62) 34%, rgba(7, 11, 20, 0.12) 58%, rgba(7, 11, 20, 0) 70%),
+    linear-gradient(0deg, rgba(7, 11, 20, 0.85) 0%, rgba(7, 11, 20, 0) 26%);
+}
+html[dir='rtl'] .hero__scrim {
+  background:
+    linear-gradient(270deg, rgba(7, 11, 20, 0.86) 0%, rgba(7, 11, 20, 0.62) 34%, rgba(7, 11, 20, 0.12) 58%, rgba(7, 11, 20, 0) 70%),
+    linear-gradient(0deg, rgba(7, 11, 20, 0.85) 0%, rgba(7, 11, 20, 0) 26%);
+}
+
+.hero__inner {
+  position: relative;
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: clamp(28px, 4svh, 48px);
+  padding-block: calc(var(--nav-h) + clamp(28px, 6svh, 72px)) clamp(64px, 9svh, 96px);
+}
+.hero__top {
+  display: grid;
+  align-items: center;
+}
+.hero__copy {
+  display: grid;
+  gap: clamp(16px, 2.2svh, 24px);
+  max-width: 680px;
+  will-change: transform, opacity;
+}
+.hero__eyebrow {
+  margin-block-end: 2px;
+}
+
+/* Headline: each sentence is a masked line that slides up into place. */
+.hero__title {
+  font-size: clamp(2.3rem, 1.05rem + 3.7vw, 4.4rem);
+  font-weight: 780;
+  line-height: 1.03;
+  letter-spacing: -0.034em;
+  text-wrap: balance;
+}
+html[lang='ar'] .hero__title {
+  letter-spacing: 0;
+  line-height: 1.3;
+  font-weight: 800;
+}
+/* The h1 only receives programmatic focus (tabindex -1, after the entrance) — it is not a control, so no
+   focus box; the screen reader announces it and keyboard users continue from here. */
+.hero__title:focus,
+.hero__title:focus-visible {
+  outline: none;
+}
+.hero__line {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.04em 0.12em;
+  margin-block: -0.04em -0.12em;
+}
+.hero__line-inner {
+  display: inline-block;
+}
+.hero__line-inner--accent {
+  background: linear-gradient(90deg, var(--sg-teal) 0%, var(--sg-teal-soft) 45%, var(--sg-white) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[dir='rtl'] .hero__line-inner--accent {
+  background: linear-gradient(270deg, var(--sg-teal) 0%, var(--sg-teal-soft) 45%, var(--sg-white) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero__lead {
+  max-width: 56ch;
+  font-size: clamp(1rem, 0.94rem + 0.3vw, 1.15rem);
+  color: #b4bfcd;
+}
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-block-start: 6px;
+}
+.hero__cta.btn--primary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 12px 40px -14px rgba(53, 242, 196, 0.7);
+}
+
+/* Value points: editorial columns with a teal index hairline. */
+.hero__values {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2.4vw, 32px);
+  max-width: 800px;
+  list-style: none;
+}
+.hero__value {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--sg-line-strong);
+}
+.hero__value::before {
+  content: '';
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline-start: 0;
+  width: 36px;
+  height: 1px;
+  background: var(--sg-teal);
+  box-shadow: 0 0 10px var(--sg-teal);
+  transition: width var(--dur-3) var(--ease-out);
+}
+.hero__value:hover::before {
+  width: 72px;
+}
+.hero__value-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: 4px;
+}
+.hero__value-index {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.14em;
+  color: var(--sg-teal);
+}
+.hero__value-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--sg-text-faint);
+}
+.hero__value-title {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--sg-text);
+}
+.hero__value-text {
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--sg-text-muted);
+}
+
+.hero__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.hero__slogan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.hero__slogan [lang='en'] {
+  font-family: var(--font-sans);
+}
+.hero__slogan [lang='ar'] {
+  font-family: var(--font-ar);
+  font-weight: 700;
+  color: var(--sg-teal-soft);
+}
+.hero__slogan-sep {
+  width: 24px;
+  height: 1px;
+  background: var(--sg-line-strong);
+}
+
+/* Scroll cue: bottom of the first viewport, on the end side under the core (clear of the copy + values). */
+.hero__cue {
+  position: absolute;
+  top: calc(100svh - 104px);
+  inset-inline-end: var(--gutter);
+  width: max-content;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.hero__cue-text {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .hero__cue-text {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+}
+.hero__cue-line {
+  position: relative;
+  width: 1px;
+  height: 44px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--sg-line-strong), transparent);
+}
+.hero__cue-line i {
+  position: absolute;
+  inset-inline-start: -1px;
+  top: -12px;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--sg-teal);
+  box-shadow: 0 0 8px var(--sg-teal);
+  animation: hero-cue 2.2s var(--ease-in-out) infinite;
+}
+@keyframes hero-cue {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(60px);
+    opacity: 0;
+  }
+}
+
+/* ---------- HUD around the 3D core (cinematic only) ---------- */
+.hero-hud {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 100svh;
+  overflow: clip; /* labels drift outward on scroll — never widen the page */
+  pointer-events: none;
+  z-index: -1;
+}
+/* Physical coordinates on purpose: the 3D world is not mirrored, so the HUD follows the projected core
+   (--core-x/-y/-d, set by Hero.tsx from coreFrame.ts), not the text direction. */
+.hero-reticle {
+  position: absolute;
+  left: calc(var(--core-x) - var(--core-d) * 0.6);
+  top: calc(var(--core-y) - var(--core-d) * 0.6);
+  width: calc(var(--core-d) * 1.2);
+  height: calc(var(--core-d) * 1.2);
+}
+.hero[data-hud='column'] .hero-reticle {
+  display: none;
+}
+.hero-reticle__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.hero-reticle__spin {
+  transform-origin: 200px 200px;
+  animation: hero-spin 48s linear infinite;
+}
+@keyframes hero-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hero-tele {
+  position: absolute;
+}
+/* Orbit: the core label rides the top of the ring; the others hug the screen edge on the core's side. */
+.hero-tele--core {
+  top: calc(var(--core-y) - var(--core-d) * 0.56);
+  left: calc(var(--core-x) - var(--core-d) * 0.12);
+}
+.hero-tele--layers {
+  top: calc(var(--core-y) - var(--core-d) * 0.27);
+}
+.hero-tele--scene {
+  top: calc(var(--core-y) + var(--core-d) * 0.33);
+}
+.hero-tele--surfaces {
+  top: calc(var(--core-y) + var(--core-d) * 0.52);
+}
+.hero[data-hud-side='right'] .hero-tele--layers {
+  right: clamp(16px, 3vw, 48px);
+}
+.hero[data-hud-side='right'] .hero-tele--scene {
+  right: clamp(24px, 5vw, 80px);
+}
+.hero[data-hud-side='right'] .hero-tele--surfaces {
+  right: clamp(110px, 12vw, 220px);
+}
+.hero[data-hud-side='left'] .hero-tele--layers {
+  left: clamp(16px, 3vw, 48px);
+}
+.hero[data-hud-side='left'] .hero-tele--scene {
+  left: clamp(24px, 5vw, 80px);
+}
+.hero[data-hud-side='left'] .hero-tele--surfaces {
+  left: clamp(110px, 12vw, 220px);
+}
+/* Column: the core is behind the copy (Arabic) — the labels stack as a telemetry rail on the free side. */
+.hero[data-hud='column'] .hero-tele {
+  right: auto;
+  left: auto;
+}
+.hero[data-hud='column'][data-hud-side='left'] .hero-tele {
+  left: clamp(20px, 4vw, 64px);
+}
+.hero[data-hud='column'][data-hud-side='right'] .hero-tele {
+  right: clamp(20px, 4vw, 64px);
+}
+.hero[data-hud='column'] .hero-tele--core {
+  top: 22%;
+}
+.hero[data-hud='column'] .hero-tele--layers {
+  top: calc(22% + 56px);
+}
+.hero[data-hud='column'] .hero-tele--scene {
+  top: calc(22% + 112px);
+}
+.hero[data-hud='column'] .hero-tele--surfaces {
+  top: calc(22% + 168px);
+}
+/* A hairline rail ties the column together. */
+.hero[data-hud='column'] .hero-hud::before {
+  content: '';
+  position: absolute;
+  top: calc(22% - 28px);
+  height: 240px;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--sg-teal-40) 20%, var(--sg-line-strong) 80%, transparent);
+}
+.hero[data-hud='column'][data-hud-side='left'] .hero-hud::before {
+  left: calc(clamp(20px, 4vw, 64px) - 12px);
+}
+.hero[data-hud='column'][data-hud-side='right'] .hero-hud::before {
+  right: calc(clamp(20px, 4vw, 64px) - 12px);
+}
+.hero-tele__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-pill);
+  background: rgba(7, 11, 20, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--sg-text-muted);
+  white-space: nowrap;
+  animation: hero-bob 7s var(--ease-in-out) infinite alternate;
+}
+.hero-tele--layers .hero-tele__label {
+  animation-delay: -2s;
+}
+.hero-tele--scene .hero-tele__label {
+  animation-delay: -4.5s;
+}
+.hero-tele--surfaces .hero-tele__label {
+  animation-delay: -1s;
+}
+@keyframes hero-bob {
+  from {
+    transform: translateY(-4px);
+  }
+  to {
+    transform: translateY(5px);
+  }
+}
+.hero-tele__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--sg-teal);
+  box-shadow: 0 0 0 3px var(--sg-teal-14);
+  animation: hero-pulse 2.4s var(--ease-in-out) infinite;
+}
+@keyframes hero-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+.hero-tele__tick {
+  width: 14px;
+  height: 1px;
+  background: var(--sg-teal);
+}
+html[lang='ar'] .hero-tele__label,
+html[lang='ar'] .hero-art .telemetry {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+}
+
+/* ---------- Static art panel (no WebGL / reduced motion) ---------- */
+.hero[data-mode='static'] .hero__top {
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: clamp(24px, 4vw, 64px);
+}
+.hero[data-mode='static'] .hero__scrim {
+  display: none;
+}
+.hero-art {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  margin: 0;
+}
+.hero-art__svg {
+  width: min(100%, 520px);
+  height: auto;
+  aspect-ratio: 1;
+}
+.hero-art__node {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  fill: #a9b4c4;
+}
+html[lang='ar'] .hero-art__node {
+  font-family: var(--font-ar);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.hero-art__caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+  text-align: center;
+}
+.hero-art__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sg-text-muted);
+}
+.hero-art__note {
+  flex-basis: 100%;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1360px) {
+  /* Not enough room beside the value columns: tuck the surfaces label under the core label. */
+  .hero[data-hud='orbit'] .hero-tele--surfaces {
+    top: calc(var(--core-y) - var(--core-d) * 0.56 + 44px);
+  }
+  .hero[data-hud='orbit'][data-hud-side='right'] .hero-tele--surfaces {
+    right: var(--gutter);
+  }
+  .hero[data-hud='orbit'][data-hud-side='left'] .hero-tele--surfaces {
+    left: var(--gutter);
+  }
+}
+@media (max-width: 1180px) {
+  .hero[data-hud='orbit'] .hero-tele--scene,
+  .hero[data-hud='orbit'] .hero-tele--layers {
+    display: none;
+  }
+}
+@media (max-width: 900px) {
+  .hero[data-mode='static'] .hero__top {
+    grid-template-columns: 1fr;
+  }
+  .hero-art {
+    order: -1;
+  }
+  .hero-art__svg {
+    width: min(78vw, 360px);
+  }
+}
+@media (max-width: 820px) {
+  .hero__scrim {
+    background: linear-gradient(0deg, rgba(7, 11, 20, 0.92) 0%, rgba(7, 11, 20, 0.7) 45%, rgba(7, 11, 20, 0.35) 75%, rgba(7, 11, 20, 0.5) 100%);
+  }
+  html[dir='rtl'] .hero__scrim {
+    background: linear-gradient(0deg, rgba(7, 11, 20, 0.92) 0%, rgba(7, 11, 20, 0.7) 45%, rgba(7, 11, 20, 0.35) 75%, rgba(7, 11, 20, 0.5) 100%);
+  }
+  /* Portrait: the core peeks in from the screen edge behind the copy — keep the lines off the text and
+     leave one label, top corner on the core's side, above an atmospheric gap. */
+  .hero-reticle,
+  .hero-tele--surfaces {
+    display: none;
+  }
+  .hero .hero-tele--core {
+    top: calc(var(--nav-h) + 24px);
+    left: auto;
+    right: var(--gutter);
+  }
+  .hero[data-hud-side='left'] .hero-tele--core {
+    left: var(--gutter);
+    right: auto;
+  }
+  .hero__inner {
+    padding-block-start: calc(var(--nav-h) + 14svh);
+  }
+  .hero[data-mode='static'] .hero__inner {
+    padding-block-start: calc(var(--nav-h) + 24px);
+  }
+  .hero__values {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .hero__value {
+    grid-template-columns: auto 1fr;
+    column-gap: 14px;
+    padding-block-start: 12px;
+  }
+  .hero__value-head {
+    grid-row: span 2;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .hero__cue {
+    display: none;
+  }
+}
+@media (max-width: 480px) {
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero__ctas .btn {
+    width: 100%;
+  }
+}

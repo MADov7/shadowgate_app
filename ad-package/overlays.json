@@ -1,0 +1,980 @@
+{
+  "project": "SHADOW GATE — 12-second ad (Google Flow package)",
+  "status": "VIDEO RENDER: PENDING — no video has been generated; this is the production-ready package for Google Flow.",
+  "fps": 24,
+  "totalFrames": 288,
+  "durationSeconds": 12,
+  "timeConvention": "Frames at 24 fps. \"out\" is exclusive: the first frame after the element (NLE mark-out).",
+  "beats": [
+    {
+      "n": 1,
+      "id": "hook",
+      "name": "Hook",
+      "in": {
+        "frame": 0,
+        "timecode": "00:00:00:00",
+        "seconds": 0
+      },
+      "out": {
+        "frame": 48,
+        "timecode": "00:00:02:00",
+        "seconds": 2
+      },
+      "frames": 48,
+      "durationSeconds": 2
+    },
+    {
+      "n": 2,
+      "id": "product",
+      "name": "Product",
+      "in": {
+        "frame": 48,
+        "timecode": "00:00:02:00",
+        "seconds": 2
+      },
+      "out": {
+        "frame": 120,
+        "timecode": "00:00:05:00",
+        "seconds": 5
+      },
+      "frames": 72,
+      "durationSeconds": 3
+    },
+    {
+      "n": 3,
+      "id": "benefit",
+      "name": "Benefit",
+      "in": {
+        "frame": 120,
+        "timecode": "00:00:05:00",
+        "seconds": 5
+      },
+      "out": {
+        "frame": 192,
+        "timecode": "00:00:08:00",
+        "seconds": 8
+      },
+      "frames": 72,
+      "durationSeconds": 3
+    },
+    {
+      "n": 4,
+      "id": "brand",
+      "name": "Brand",
+      "in": {
+        "frame": 192,
+        "timecode": "00:00:08:00",
+        "seconds": 8
+      },
+      "out": {
+        "frame": 240,
+        "timecode": "00:00:10:00",
+        "seconds": 10
+      },
+      "frames": 48,
+      "durationSeconds": 2
+    },
+    {
+      "n": 5,
+      "id": "cta",
+      "name": "CTA",
+      "in": {
+        "frame": 240,
+        "timecode": "00:00:10:00",
+        "seconds": 10
+      },
+      "out": {
+        "frame": 288,
+        "timecode": "00:00:12:00",
+        "seconds": 12
+      },
+      "frames": 48,
+      "durationSeconds": 2
+    }
+  ],
+  "formats": {
+    "16x9": {
+      "width": 1920,
+      "height": 1080,
+      "titleSafe": {
+        "x": 96,
+        "y": 54,
+        "w": 1728,
+        "h": 972
+      },
+      "actionSafe": {
+        "x": 67,
+        "y": 38,
+        "w": 1786,
+        "h": 1004
+      },
+      "platformUiZones": []
+    },
+    "9x16": {
+      "width": 1080,
+      "height": 1920,
+      "titleSafe": {
+        "x": 120,
+        "y": 260,
+        "w": 840,
+        "h": 1140
+      },
+      "actionSafe": {
+        "x": 54,
+        "y": 96,
+        "w": 972,
+        "h": 1728
+      },
+      "platformUiZones": [
+        {
+          "name": "Platform top bar",
+          "x": 0,
+          "y": 0,
+          "w": 1080,
+          "h": 260
+        },
+        {
+          "name": "Caption, sound and CTA button area",
+          "x": 0,
+          "y": 1400,
+          "w": 1080,
+          "h": 520
+        },
+        {
+          "name": "Action rail (like / comment / share)",
+          "x": 960,
+          "y": 900,
+          "w": 120,
+          "h": 500
+        }
+      ]
+    }
+  },
+  "fonts": {
+    "en": {
+      "family": "Manrope",
+      "weights": [
+        800,
+        600
+      ],
+      "source": "@fontsource-variable/manrope (SIL OFL 1.1)"
+    },
+    "ar": {
+      "family": "Tajawal",
+      "weights": [
+        800,
+        500
+      ],
+      "source": "@fontsource/tajawal (SIL OFL 1.1)"
+    },
+    "wordmark": {
+      "family": "Manrope",
+      "weight": 800,
+      "tracking": "0.185em",
+      "gapBeforeGATE": "0.37em"
+    }
+  },
+  "cues": [
+    {
+      "id": "ov1",
+      "slug": "hook",
+      "beat": "hook",
+      "kind": "lines",
+      "text": {
+        "en": "One weak point is enough.",
+        "ar": "نقطة ضعف واحدة تكفي."
+      },
+      "in": {
+        "frame": 0,
+        "timecode": "00:00:00:00",
+        "seconds": 0
+      },
+      "out": {
+        "frame": 48,
+        "timecode": "00:00:02:00",
+        "seconds": 2
+      },
+      "durationSeconds": 2,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 6,
+      "lines": {
+        "16x9": {
+          "en": [
+            "One weak point is enough."
+          ],
+          "ar": [
+            "نقطة ضعف واحدة تكفي."
+          ]
+        },
+        "9x16": {
+          "en": [
+            "One weak point",
+            "is enough."
+          ],
+          "ar": [
+            "نقطة ضعف",
+            "واحدة تكفي."
+          ]
+        }
+      },
+      "style": {
+        "16x9": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 64,
+            "sizePctOfFrameHeight": 5.93,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 70,
+            "sizePctOfFrameHeight": 6.48,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        },
+        "9x16": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 72,
+            "sizePctOfFrameHeight": 3.75,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 80,
+            "sizePctOfFrameHeight": 4.17,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        }
+      },
+      "placement": {
+        "16x9": "lower third, centred; last baseline at y=936 (86.67 % of height); teal gate-cap accent above",
+        "9x16": "upper third, centred; first baseline at y=420 (21.88 % of height); teal gate-cap accent above"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out",
+        "out": "fade 100→0 % over the last 6 frames"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov1-hook_en.svg",
+            "png": "assets/overlays/16x9/ov1-hook_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov1-hook_ar.svg",
+            "png": "assets/overlays/16x9/ov1-hook_ar.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov1-hook_en.svg",
+            "png": "assets/overlays/9x16/ov1-hook_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov1-hook_ar.svg",
+            "png": "assets/overlays/9x16/ov1-hook_ar.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ov2",
+      "slug": "product",
+      "beat": "product",
+      "kind": "lines",
+      "text": {
+        "en": "Cybersecurity for businesses and individuals.",
+        "ar": "أمن سيبراني للشركات والأفراد."
+      },
+      "in": {
+        "frame": 54,
+        "timecode": "00:00:02:06",
+        "seconds": 2.25
+      },
+      "out": {
+        "frame": 120,
+        "timecode": "00:00:05:00",
+        "seconds": 5
+      },
+      "durationSeconds": 2.75,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 6,
+      "lines": {
+        "16x9": {
+          "en": [
+            "Cybersecurity for businesses",
+            "and individuals."
+          ],
+          "ar": [
+            "أمن سيبراني للشركات والأفراد."
+          ]
+        },
+        "9x16": {
+          "en": [
+            "Cybersecurity for",
+            "businesses and",
+            "individuals."
+          ],
+          "ar": [
+            "أمن سيبراني",
+            "للشركات والأفراد."
+          ]
+        }
+      },
+      "style": {
+        "16x9": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 64,
+            "sizePctOfFrameHeight": 5.93,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 70,
+            "sizePctOfFrameHeight": 6.48,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        },
+        "9x16": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 72,
+            "sizePctOfFrameHeight": 3.75,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 80,
+            "sizePctOfFrameHeight": 4.17,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        }
+      },
+      "placement": {
+        "16x9": "lower third, centred; last baseline at y=936 (86.67 % of height); teal gate-cap accent above",
+        "9x16": "upper third, centred; first baseline at y=420 (21.88 % of height); teal gate-cap accent above"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out",
+        "out": "fade 100→0 % over the last 6 frames"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov2-product_en.svg",
+            "png": "assets/overlays/16x9/ov2-product_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov2-product_ar.svg",
+            "png": "assets/overlays/16x9/ov2-product_ar.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov2-product_en.svg",
+            "png": "assets/overlays/9x16/ov2-product_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov2-product_ar.svg",
+            "png": "assets/overlays/9x16/ov2-product_ar.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ov3",
+      "slug": "benefit",
+      "beat": "benefit",
+      "kind": "lines",
+      "text": {
+        "en": "Understand your risks. Strengthen your defenses.",
+        "ar": "افهم مخاطرك. عزّز دفاعاتك."
+      },
+      "in": {
+        "frame": 126,
+        "timecode": "00:00:05:06",
+        "seconds": 5.25
+      },
+      "out": {
+        "frame": 192,
+        "timecode": "00:00:08:00",
+        "seconds": 8
+      },
+      "durationSeconds": 2.75,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 6,
+      "lines": {
+        "16x9": {
+          "en": [
+            "Understand your risks.",
+            "Strengthen your defenses."
+          ],
+          "ar": [
+            "افهم مخاطرك.",
+            "عزّز دفاعاتك."
+          ]
+        },
+        "9x16": {
+          "en": [
+            "Understand your risks.",
+            "Strengthen your",
+            "defenses."
+          ],
+          "ar": [
+            "افهم مخاطرك.",
+            "عزّز دفاعاتك."
+          ]
+        }
+      },
+      "sentenceStartFrames": [
+        126,
+        138
+      ],
+      "style": {
+        "16x9": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 64,
+            "sizePctOfFrameHeight": 5.93,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 70,
+            "sizePctOfFrameHeight": 6.48,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        },
+        "9x16": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 72,
+            "sizePctOfFrameHeight": 3.75,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 80,
+            "sizePctOfFrameHeight": 4.17,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        }
+      },
+      "placement": {
+        "16x9": "lower third, centred; last baseline at y=936 (86.67 % of height); teal gate-cap accent above",
+        "9x16": "upper third, centred; first baseline at y=420 (21.88 % of height); teal gate-cap accent above"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out; sentence 2 starts 12 frames later",
+        "out": "fade 100→0 % over the last 6 frames"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov3-benefit_en.svg",
+            "png": "assets/overlays/16x9/ov3-benefit_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov3-benefit_ar.svg",
+            "png": "assets/overlays/16x9/ov3-benefit_ar.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov3-benefit_en.svg",
+            "png": "assets/overlays/9x16/ov3-benefit_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov3-benefit_ar.svg",
+            "png": "assets/overlays/9x16/ov3-benefit_ar.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ov4",
+      "slug": "brand",
+      "beat": "brand",
+      "kind": "stacked",
+      "text": {
+        "en": "SHADOW GATE",
+        "ar": "SHADOW GATE"
+      },
+      "in": {
+        "frame": 198,
+        "timecode": "00:00:08:06",
+        "seconds": 8.25
+      },
+      "out": {
+        "frame": 246,
+        "timecode": "00:00:10:06",
+        "seconds": 10.25
+      },
+      "durationSeconds": 2,
+      "fadeInFrames": 18,
+      "fadeOutFrames": 6,
+      "style": {
+        "16x9": {
+          "en": {
+            "markSizePx": 210,
+            "markSizePctOfFrameHeight": 19.44,
+            "wordmarkSizePx": 72,
+            "wordmarkSizePctOfFrameHeight": 6.67
+          },
+          "ar": {
+            "markSizePx": 210,
+            "markSizePctOfFrameHeight": 19.44,
+            "wordmarkSizePx": 72,
+            "wordmarkSizePctOfFrameHeight": 6.67
+          }
+        },
+        "9x16": {
+          "en": {
+            "markSizePx": 260,
+            "markSizePctOfFrameHeight": 13.54,
+            "wordmarkSizePx": 84,
+            "wordmarkSizePctOfFrameHeight": 4.38
+          },
+          "ar": {
+            "markSizePx": 260,
+            "markSizePctOfFrameHeight": 13.54,
+            "wordmarkSizePx": 84,
+            "wordmarkSizePctOfFrameHeight": 4.38
+          }
+        }
+      },
+      "placement": {
+        "16x9": "centred stacked lockup; mark top at y=150, wordmark baseline y=470",
+        "9x16": "centred stacked lockup; mark top at y=350, wordmark baseline y=755"
+      },
+      "animation": {
+        "in": "mark strokes draw on frames 198–216 (ease-out); wordmark fades + rises frames 204–216",
+        "out": "cross-dissolve into the end-card lockup, frames 240–246"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov4-brand.svg",
+            "png": "assets/overlays/16x9/ov4-brand.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov4-brand.svg",
+            "png": "assets/overlays/16x9/ov4-brand.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov4-brand.svg",
+            "png": "assets/overlays/9x16/ov4-brand.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov4-brand.svg",
+            "png": "assets/overlays/9x16/ov4-brand.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ovL",
+      "slug": "endcard-lockup",
+      "beat": "cta",
+      "kind": "lockup",
+      "text": {
+        "en": "SHADOW GATE",
+        "ar": "SHADOW GATE"
+      },
+      "in": {
+        "frame": 240,
+        "timecode": "00:00:10:00",
+        "seconds": 10
+      },
+      "out": {
+        "frame": 288,
+        "timecode": "00:00:12:00",
+        "seconds": 12
+      },
+      "durationSeconds": 2,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 0,
+      "style": {
+        "16x9": {
+          "en": {
+            "lockupMarkHeightPx": 108,
+            "lockupMarkHeightPctOfFrameHeight": 10
+          },
+          "ar": {
+            "lockupMarkHeightPx": 108,
+            "lockupMarkHeightPctOfFrameHeight": 10
+          }
+        },
+        "9x16": {
+          "en": {
+            "lockupMarkHeightPx": 132,
+            "lockupMarkHeightPctOfFrameHeight": 6.88
+          },
+          "ar": {
+            "lockupMarkHeightPx": 132,
+            "lockupMarkHeightPctOfFrameHeight": 6.88
+          }
+        }
+      },
+      "placement": {
+        "16x9": "end card: horizontal lockup centred at y=190",
+        "9x16": "end card: horizontal lockup centred at y=350"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out",
+        "out": "holds to the final frame (no fade-out)"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ovL-endcard-lockup.svg",
+            "png": "assets/overlays/16x9/ovL-endcard-lockup.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ovL-endcard-lockup.svg",
+            "png": "assets/overlays/16x9/ovL-endcard-lockup.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ovL-endcard-lockup.svg",
+            "png": "assets/overlays/9x16/ovL-endcard-lockup.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ovL-endcard-lockup.svg",
+            "png": "assets/overlays/9x16/ovL-endcard-lockup.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ov5",
+      "slug": "cta",
+      "beat": "cta",
+      "kind": "cta",
+      "text": {
+        "en": "Start with a security assessment.",
+        "ar": "ابدأ بتقييم أمني."
+      },
+      "in": {
+        "frame": 240,
+        "timecode": "00:00:10:00",
+        "seconds": 10
+      },
+      "out": {
+        "frame": 288,
+        "timecode": "00:00:12:00",
+        "seconds": 12
+      },
+      "durationSeconds": 2,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 0,
+      "lines": {
+        "16x9": {
+          "en": [
+            "Start with a security assessment."
+          ],
+          "ar": [
+            "ابدأ بتقييم أمني."
+          ]
+        },
+        "9x16": {
+          "en": [
+            "Start with a",
+            "security assessment."
+          ],
+          "ar": [
+            "ابدأ بتقييم أمني."
+          ]
+        }
+      },
+      "style": {
+        "16x9": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 64,
+            "sizePctOfFrameHeight": 5.93,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 70,
+            "sizePctOfFrameHeight": 6.48,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        },
+        "9x16": {
+          "en": {
+            "font": "Manrope",
+            "weight": 800,
+            "sizePx": 72,
+            "sizePctOfFrameHeight": 3.75,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 800,
+            "sizePx": 80,
+            "sizePctOfFrameHeight": 4.17,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#F3F6FA",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        }
+      },
+      "placement": {
+        "16x9": "end card: centred, first baseline y=380",
+        "9x16": "end card: centred, first baseline y=560"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out",
+        "out": "holds to the final frame (no fade-out)"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov5-cta_en.svg",
+            "png": "assets/overlays/16x9/ov5-cta_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov5-cta_ar.svg",
+            "png": "assets/overlays/16x9/ov5-cta_ar.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov5-cta_en.svg",
+            "png": "assets/overlays/9x16/ov5-cta_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov5-cta_ar.svg",
+            "png": "assets/overlays/9x16/ov5-cta_ar.png"
+          }
+        }
+      }
+    },
+    {
+      "id": "ov6",
+      "slug": "slogan",
+      "beat": "cta",
+      "kind": "slogan",
+      "text": {
+        "en": "Your gateway to a safer digital world.",
+        "ar": "حمايتك تبدأ من هنا"
+      },
+      "in": {
+        "frame": 246,
+        "timecode": "00:00:10:06",
+        "seconds": 10.25
+      },
+      "out": {
+        "frame": 288,
+        "timecode": "00:00:12:00",
+        "seconds": 12
+      },
+      "durationSeconds": 1.75,
+      "fadeInFrames": 6,
+      "fadeOutFrames": 0,
+      "lines": {
+        "16x9": {
+          "en": [
+            "Your gateway to a safer digital world."
+          ],
+          "ar": [
+            "حمايتك تبدأ من هنا"
+          ]
+        },
+        "9x16": {
+          "en": [
+            "Your gateway to a safer digital world."
+          ],
+          "ar": [
+            "حمايتك تبدأ من هنا"
+          ]
+        }
+      },
+      "style": {
+        "16x9": {
+          "en": {
+            "font": "Manrope",
+            "weight": 600,
+            "sizePx": 34,
+            "sizePctOfFrameHeight": 3.15,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#A9B4C4",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 500,
+            "sizePx": 38,
+            "sizePctOfFrameHeight": 3.52,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#A9B4C4",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        },
+        "9x16": {
+          "en": {
+            "font": "Manrope",
+            "weight": 600,
+            "sizePx": 42,
+            "sizePctOfFrameHeight": 2.19,
+            "lineHeight": 1.12,
+            "tracking": "-0.01em",
+            "color": "#A9B4C4",
+            "align": "centre",
+            "direction": "ltr"
+          },
+          "ar": {
+            "font": "Tajawal",
+            "weight": 500,
+            "sizePx": 46,
+            "sizePctOfFrameHeight": 2.4,
+            "lineHeight": 1.3,
+            "tracking": "0",
+            "color": "#A9B4C4",
+            "align": "centre",
+            "direction": "rtl"
+          }
+        }
+      },
+      "placement": {
+        "16x9": "end card: centred, 72px below the last CTA baseline",
+        "9x16": "end card: centred, 96px below the last CTA baseline"
+      },
+      "animation": {
+        "in": "fade 0→100 % + rise 1.5 % of frame height (16:9) / 1 % (9:16) over 6 frames, ease-out",
+        "out": "holds to the final frame (no fade-out)"
+      },
+      "assets": {
+        "16x9": {
+          "en": {
+            "svg": "assets/overlays/16x9/ov6-slogan_en.svg",
+            "png": "assets/overlays/16x9/ov6-slogan_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/16x9/ov6-slogan_ar.svg",
+            "png": "assets/overlays/16x9/ov6-slogan_ar.png"
+          }
+        },
+        "9x16": {
+          "en": {
+            "svg": "assets/overlays/9x16/ov6-slogan_en.svg",
+            "png": "assets/overlays/9x16/ov6-slogan_en.png"
+          },
+          "ar": {
+            "svg": "assets/overlays/9x16/ov6-slogan_ar.svg",
+            "png": "assets/overlays/9x16/ov6-slogan_ar.png"
+          }
+        }
+      }
+    }
+  ],
+  "endCard": {
+    "16x9": {
+      "en": {
+        "transparent": "assets/overlays/16x9/endcard_en.svg",
+        "solid": "assets/overlays/16x9/endcard_en_solid.svg"
+      },
+      "ar": {
+        "transparent": "assets/overlays/16x9/endcard_ar.svg",
+        "solid": "assets/overlays/16x9/endcard_ar_solid.svg"
+      }
+    },
+    "9x16": {
+      "en": {
+        "transparent": "assets/overlays/9x16/endcard_en.svg",
+        "solid": "assets/overlays/9x16/endcard_en_solid.svg"
+      },
+      "ar": {
+        "transparent": "assets/overlays/9x16/endcard_ar.svg",
+        "solid": "assets/overlays/9x16/endcard_ar_solid.svg"
+      }
+    }
+  }
+}

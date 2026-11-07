@@ -1,5 +1,27 @@
 import type { buildEn } from '../en/build';
 
 export const buildAr: Record<keyof typeof buildEn, string> = {
-  title: 'Build',
+  eyebrow: 'SG//BUILD 09',
+  title: 'ابنِ حمايتك',
+  lead: 'كل خدمة تختارها تضيف مقطعًا إلى البوابة. إنها صورة واضحة لطلبك — النطاق الذي طلبته، بلا أي خفايا.',
+  meterLabel: 'اكتمال الهيكل',
+  meterValue: 'الهيكل: {count} من {max} مقاطع',
+  meterHint: 'كل خدمة مختارة، وكذلك الباقة، تضيف مقطعًا واحدًا.',
+  meterComplete: 'اكتملت المقاطع الـ{max} كلها.',
+  telemetry: 'SEGMENTS {count}/{max}',
+  summaryTitle: 'طلبك',
+  summaryCount: '{count} عنصر',
+  packageLabel: 'الباقة',
+  packageIncludes: 'تشمل {count} خدمة',
+  servicesLabel: 'الخدمات المختارة',
+  removeService: 'إزالة {name} من الطلب',
+  pricingIllustrative: 'توضيحي · {amount} {per}',
+  emptyTitle: 'هيكلك في الانتظار',
+  emptyBody: 'أضف خدمات من دليل الخدمات أو الاختبار أو الباقات.',
+  emptyCatalog: 'دليل الخدمات',
+  emptyQuiz: 'اختبار التوصيات',
+  emptyPackages: 'الباقات',
+  continue: 'المتابعة إلى الطلب',
+  edit: 'تعديل الطلب',
+  staticCaption: 'بوابة رمزية — {count} من {max} مقاطع مضاءة',
 };

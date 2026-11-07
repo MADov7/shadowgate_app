@@ -1,0 +1,230 @@
+/* SVG gateway fallback (3D loading / static mode). Opaque: it carries its own architectural backdrop. */
+.sgate {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(70% 55% at 50% 38%, rgba(53, 242, 196, 0.07), transparent 70%),
+    radial-gradient(120% 80% at 50% 120%, rgba(20, 32, 53, 0.9), transparent 60%),
+    var(--sg-navy);
+  transition:
+    opacity 0.8s var(--ease-out),
+    visibility 0s linear 0s;
+}
+.sgate[data-hidden='true'] {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.8s var(--ease-out),
+    visibility 0s linear 0.8s;
+}
+
+/* Perspective floor grid meeting the gate base. */
+.sgate__floor {
+  position: absolute;
+  inset-inline: -40%;
+  top: calc(var(--sgate-top) + var(--sgate-h) * 0.945);
+  height: 70svh;
+  background-image:
+    linear-gradient(rgba(53, 242, 196, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 242, 196, 0.12) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center top;
+  transform: perspective(520px) rotateX(64deg);
+  transform-origin: 50% 0;
+  -webkit-mask-image: radial-gradient(60% 90% at 50% 0%, #000 0%, transparent 75%);
+  mask-image: radial-gradient(60% 90% at 50% 0%, #000 0%, transparent 75%);
+  opacity: 0.55;
+}
+
+.sgate__fog {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(34svh 22svh at 50% calc(var(--sgate-top) + var(--sgate-h) * 0.95), rgba(53, 242, 196, 0.16), transparent 70%),
+    radial-gradient(60svh 40svh at 50% calc(var(--sgate-top) + var(--sgate-h) * 0.5), rgba(53, 242, 196, 0.06), transparent 70%);
+  pointer-events: none;
+}
+
+.sgate__dust {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--sg-teal-soft);
+}
+.sgate__dust-layer {
+  animation: sgate-drift 22s linear infinite;
+}
+.sgate__dust-layer--1 {
+  animation-duration: 31s;
+  animation-direction: reverse;
+}
+.sgate__dust-layer--2 {
+  animation-duration: 40s;
+}
+@keyframes sgate-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(1.5px, -3px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* The gate itself: sized by viewport height (like the 3D camera's vertical FOV). */
+.sgate {
+  --sgate-top: 10svh;
+  --sgate-h: min(56svh, 86vw * 1.1);
+}
+.sgate__rig {
+  position: absolute;
+  top: var(--sgate-top);
+  inset-inline: 0;
+  margin-inline: auto;
+  height: var(--sgate-h);
+  aspect-ratio: 400 / 440;
+  transform-origin: 50% 55%;
+  transition:
+    transform 0.95s cubic-bezier(0.6, 0, 0.8, 0.25) 0.75s,
+    opacity 0.5s linear 1.2s;
+}
+.sgate__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+}
+
+.sgate__label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  fill: rgba(243, 246, 250, 0.32);
+}
+
+/* Idle: faint light leaking, seam breathing, a spark travelling the inner edge. */
+.sgate__beyond {
+  opacity: 0.18;
+  transition: opacity 0.7s var(--ease-out) 0.3s;
+}
+.sgate__horizon {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out) 0.6s;
+}
+.sgate__route {
+  opacity: 0.9;
+}
+.sgate__route-glow {
+  opacity: 0.45;
+}
+.sgate__seam-glow {
+  animation: sgate-breathe 3.6s var(--ease-in-out) infinite alternate;
+  transition: opacity 0.3s;
+}
+.sgate__seam {
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+@keyframes sgate-breathe {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 0.85;
+  }
+}
+.sgate__edge-rest {
+  opacity: 0.4;
+}
+.sgate__edge-spark {
+  stroke-dasharray: 5 95;
+  animation: sgate-spark 7s linear infinite;
+}
+@keyframes sgate-spark {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+.sgate__edge-trace,
+.sgate__edge-trace-glow {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0;
+  transition:
+    stroke-dashoffset 0.6s var(--ease-out),
+    opacity 0.2s linear;
+}
+.sgate__leaf {
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.2, 1) 0.3s;
+}
+.sgate__flood {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 50% 60% at 50% calc(var(--sgate-top) + var(--sgate-h) * 0.55),
+    rgba(217, 255, 244, 0.9),
+    rgba(53, 242, 196, 0.45) 40%,
+    rgba(7, 11, 20, 0) 80%
+  );
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-in-out) 1.05s;
+}
+
+/* Opening sequence (≈1.9 s with the overlay crossfade). */
+.sgate[data-state='opening'] .sgate__edge-trace,
+.sgate[data-state='opening'] .sgate__edge-trace-glow {
+  stroke-dashoffset: 0;
+  opacity: 1;
+}
+.sgate[data-state='opening'] .sgate__edge-spark {
+  opacity: 0;
+}
+.sgate[data-state='opening'] .sgate__seam,
+.sgate[data-state='opening'] .sgate__seam-glow {
+  opacity: 0;
+  animation: none;
+  transition-delay: 0.3s;
+}
+.sgate[data-state='opening'] .sgate__leaf--l {
+  transform: translateX(-150px);
+}
+.sgate[data-state='opening'] .sgate__leaf--r {
+  transform: translateX(150px);
+}
+.sgate[data-state='opening'] .sgate__beyond {
+  opacity: 1;
+}
+.sgate[data-state='opening'] .sgate__horizon {
+  opacity: 1;
+}
+.sgate[data-state='opening'] .sgate__rig {
+  transform: scale(3.4);
+  opacity: 0;
+}
+.sgate[data-state='opening'] .sgate__flood {
+  opacity: 1;
+}
+
+@media (max-width: 700px) {
+  .sgate {
+    --sgate-top: 11svh;
+    --sgate-h: min(46svh, 78vw * 1.1);
+  }
+  .sgate__floor {
+    background-size: 44px 44px;
+  }
+}
+@media (max-height: 620px) {
+  .sgate {
+    --sgate-top: 14svh;
+    --sgate-h: 44svh;
+  }
+}

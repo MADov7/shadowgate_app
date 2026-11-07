@@ -1,5 +1,27 @@
 import type { welcomeEn } from '../en/welcome';
 
 export const welcomeAr: Record<keyof typeof welcomeEn, string> = {
-  title: 'Welcome',
+  dialogLabel: 'مرحبًا بك في شادو غيت',
+  brandLabel: 'شادو غيت',
+  eyebrow: 'خدمات الأمن السيبراني · للشركات والأفراد',
+  title: 'حمايتك تبدأ خلف هذه البوابة.',
+  enter: 'ادخل إلى شادو غيت',
+  enterKey: 'Enter',
+  direct: 'انتقل مباشرة إلى الخدمات',
+  skip: 'تخطَّ المقدمة',
+  skipKey: 'Esc',
+  statusOpening: 'جارٍ فتح البوابة…',
+  statusDone: 'أنت الآن داخل شادو غيت.',
+  gateSealed: 'البوابة 01 // مغلقة',
+  gateOpening: 'البوابة 01 // تُفتح',
+  access: 'نقطة الوصول SG',
+  accessNode: 'عقدة الوصول 00',
+  perimeter: 'المحيط // وضع الاستعداد',
+  perimeterOpen: 'المحيط // مفتوح',
+  visitor: 'جلسة زائر',
+  worldLoading: 'العالم ثلاثي الأبعاد // قيد التحميل',
+  worldReady: 'العالم ثلاثي الأبعاد // جاهز',
+  worldStatic: 'العالم // عرض ثابت',
+  keysHint: 'مرِّر أو اضغط Enter',
+  controlsLabel: 'إعدادات الترحيب',
 };

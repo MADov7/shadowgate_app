@@ -1,0 +1,1046 @@
+/* Interaction G — Protection Simulation (prefix: sim-). Red appears only on the threat path; teal = defended. */
+.sim {
+  --sim-hue: var(--sg-phishing);
+  --sim-hue-12: rgba(255, 181, 71, 0.12);
+  --sim-hue-on: #1a1102;
+  --sim-threat-text: #ff8a96;
+}
+.sim[data-hue='login'] {
+  --sim-hue: var(--sg-login);
+  --sim-hue-12: rgba(185, 156, 255, 0.14);
+  --sim-hue-on: #120a24;
+}
+
+.sim-head__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Small uppercase labels */
+.sim-label,
+.sim-tm {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .sim-label,
+html[lang='ar'] .sim-tm {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* ---------- Shell ---------- */
+.sim-shell {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background:
+    radial-gradient(900px 300px at 0% 0%, rgba(53, 242, 196, 0.06), transparent 60%),
+    var(--sg-glass-strong);
+}
+.sim-shell::before {
+  /* thin teal hairline along the top edge */
+  content: '';
+  position: absolute;
+  top: -1px;
+  inset-inline: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sg-teal-40), transparent);
+}
+
+/* ---------- Scenario picker ---------- */
+.sim-pick {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.sim-pick legend {
+  margin-bottom: var(--space-3);
+  padding: 0;
+}
+.sim-pick__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.sim-choice {
+  --choice-hue: var(--sg-phishing);
+  --choice-hue-12: rgba(255, 181, 71, 0.12);
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-md);
+  background: rgba(243, 246, 250, 0.03);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2),
+    background-color var(--dur-2),
+    box-shadow var(--dur-2);
+}
+.sim-choice[data-hue='login'] {
+  --choice-hue: var(--sg-login);
+  --choice-hue-12: rgba(185, 156, 255, 0.14);
+}
+.sim-choice:hover {
+  border-color: var(--sg-teal-40);
+}
+.sim-choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.sim-choice:has(input:focus-visible) {
+  outline: 2px solid var(--sg-teal);
+  outline-offset: 3px;
+}
+.sim-choice:has(input:checked) {
+  border-color: var(--sg-teal);
+  background: linear-gradient(135deg, var(--sg-teal-08), rgba(53, 242, 196, 0) 70%), rgba(243, 246, 250, 0.03);
+  box-shadow: inset 0 0 0 1px var(--sg-teal-24);
+}
+.sim-choice__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-sm);
+  color: var(--choice-hue);
+  background: var(--choice-hue-12);
+  border: 1px solid var(--choice-hue-12);
+}
+.sim-choice__icon svg {
+  width: 22px;
+  height: 22px;
+}
+.sim-choice__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.sim-choice__name {
+  font-weight: 750;
+  color: var(--sg-text);
+}
+.sim-choice__desc {
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  color: var(--sg-text-muted);
+}
+.sim-choice__check {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sg-line-strong);
+  color: transparent;
+  transition:
+    background-color var(--dur-2),
+    border-color var(--dur-2);
+}
+.sim-choice__check svg {
+  width: 14px;
+  height: 14px;
+}
+.sim-choice:has(input:checked) .sim-choice__check {
+  border-color: var(--sg-teal);
+  background: var(--sg-teal);
+  color: var(--sg-on-teal);
+}
+
+/* ---------- Layout ---------- */
+.sim-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+.sim-visual {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.sim-fiction {
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+
+/* ---------- Artefacts ---------- */
+.sim-art {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, #101a2e, #0b1222);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.85);
+  font-size: var(--fs-sm);
+}
+.sim-art__chrome {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--sg-line);
+  background: rgba(243, 246, 250, 0.03);
+}
+.sim-art__dots {
+  display: inline-flex;
+  gap: 5px;
+}
+.sim-art__dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(243, 246, 250, 0.16);
+}
+.sim-art__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .sim-art__title {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+}
+.sim-art__title svg {
+  width: 13px;
+  height: 13px;
+}
+.sim-art__foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 60px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--sg-line);
+  background: rgba(7, 11, 20, 0.35);
+}
+.sim-art__tools {
+  display: inline-flex;
+  gap: 14px;
+  color: var(--sg-text-faint);
+}
+.sim-art__tools svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Email */
+.sim-email__meta {
+  display: grid;
+  gap: 8px;
+  /* Wider inline padding leaves a gutter for the coach-mark badges, so they never sit on text. */
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--sg-line);
+}
+.sim-email__row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 10px;
+}
+.sim-email__k {
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--sg-text-faint);
+}
+.sim-email__from {
+  font-weight: 700;
+  color: var(--sg-text);
+}
+.sim-email__addr {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--sg-text-muted);
+  overflow-wrap: anywhere;
+}
+.sim-email__subject {
+  font-weight: 700;
+  color: var(--sg-text);
+}
+.sim-email__body {
+  display: grid;
+  gap: 12px;
+  padding: 16px 22px;
+  line-height: 1.6;
+  color: var(--sg-text-muted);
+}
+.sim-email__body strong {
+  color: var(--sg-text);
+  font-weight: 650;
+}
+.sim-email__btn {
+  display: inline-flex;
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #3567e0; /* the fake sender's "corporate" button — deliberately not the brand teal */
+  color: #fff;
+  font-weight: 700;
+}
+.sim-email__url {
+  display: block;
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+.sim-email__url bdi {
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+.sim-email__sign {
+  color: var(--sg-text-faint);
+}
+
+/* Sign-in alert */
+.sim-login__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--sg-line);
+}
+.sim-login__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--sg-login);
+  background: rgba(185, 156, 255, 0.12);
+}
+.sim-login__icon svg {
+  width: 22px;
+  height: 22px;
+}
+.sim-login__heading {
+  font-weight: 750;
+  color: var(--sg-text);
+}
+.sim-login__account {
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+.sim-login__account bdi {
+  font-family: var(--font-mono);
+}
+.sim-login__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+  margin: 0;
+  padding: 16px 22px;
+}
+.sim-login__grid > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.sim-login__wide {
+  grid-column: 1 / -1;
+}
+.sim-login__grid dt {
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--sg-text-faint);
+}
+.sim-login__grid dd {
+  margin: 0;
+  color: var(--sg-text);
+  font-weight: 600;
+}
+.sim-login__ip {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.sim-login__note {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--sg-text-faint);
+}
+.sim-login__fakebtns {
+  display: inline-flex;
+  gap: 8px;
+}
+.sim-login__fakebtns span {
+  padding: 6px 12px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: 6px;
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--sg-text-faint);
+}
+
+/* ---------- Coach marks (warning signals) ---------- */
+.sim-mark {
+  position: relative;
+  margin: -2px -4px;
+  padding: 2px 4px;
+  border-radius: 5px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition:
+    background-color 0.4s ease,
+    box-shadow 0.4s ease,
+    outline-color 0.4s ease;
+  transition-delay: calc(var(--n, 1) * 110ms);
+  outline: 1.5px dashed transparent;
+  outline-offset: 0;
+}
+.sim-mark--block {
+  display: inline-block;
+  margin: -6px;
+  padding: 6px;
+  border-radius: 8px;
+}
+.sim-mark--block .sim-mark__badge {
+  inset-inline-start: -14px;
+}
+.sim-mark[data-state='on'] {
+  background: var(--sim-hue-12);
+  box-shadow: 0 0 0 1.5px var(--sim-hue);
+}
+.sim-mark[data-state='missed'] {
+  outline-color: rgba(243, 246, 250, 0.3);
+}
+.sim-mark__badge {
+  position: absolute;
+  top: -11px;
+  /* In the artefact's inline gutter, beside (not over) the first glyph. */
+  inset-inline-start: -17px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--sim-hue);
+  color: var(--sim-hue-on);
+  opacity: 0;
+  transform: scale(0.3);
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s var(--ease-out);
+  transition-delay: calc(var(--n, 1) * 110ms);
+}
+.sim-mark[data-state='on'] .sim-mark__badge {
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: 0 0 0 3px rgba(7, 11, 20, 0.9);
+}
+.sim-mark[data-state='missed'] .sim-mark__badge {
+  opacity: 1;
+  transform: scale(1);
+  background: var(--sg-navy-4);
+  color: var(--sg-text-faint);
+  box-shadow: 0 0 0 3px rgba(7, 11, 20, 0.9);
+}
+
+/* ---------- Outcome stamp ---------- */
+.sim-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 8px 14px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  font-weight: 750;
+  line-height: 1.3;
+  animation: sim-stamp-in 0.5s var(--ease-out);
+}
+.sim-stamp svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.sim-stamp[data-tone='defended'] {
+  color: var(--sg-teal);
+  border: 1.5px solid var(--sg-teal);
+  background: var(--sg-teal-08);
+  box-shadow: 0 0 24px -8px var(--sg-teal-40);
+}
+.sim-stamp[data-tone='threat'] {
+  color: var(--sim-threat-text);
+  border: 1.5px solid var(--sg-threat);
+  background: var(--sg-threat-12);
+}
+@keyframes sim-stamp-in {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+/* ---------- Scenario path ---------- */
+.sim-path {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-md);
+  background: rgba(7, 11, 20, 0.45);
+}
+.sim-path__track {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  list-style: none;
+}
+.sim-path__node {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  isolation: isolate;
+}
+.sim-path__node:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 50%;
+  z-index: -1;
+  width: 100%;
+  height: 2px;
+  background: var(--sg-line-strong);
+  transition: background-color 0.4s ease;
+}
+.sim-path__node[data-reached='true']::before {
+  background: var(--sg-teal);
+}
+.sim-path[data-tone='threat'] .sim-path__node:nth-child(n + 3)[data-reached='true']::before {
+  background: var(--sg-threat);
+}
+.sim-path__dot {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sg-line-strong);
+  background: var(--sg-navy-2);
+  color: var(--sg-text-faint);
+  transition:
+    border-color 0.4s,
+    background-color 0.4s,
+    color 0.4s;
+}
+.sim-path__dot svg {
+  width: 15px;
+  height: 15px;
+}
+.sim-path__node[data-reached='true'] .sim-path__dot {
+  border-color: var(--sg-teal);
+  background: var(--sg-teal-14);
+  color: var(--sg-teal);
+}
+.sim-path[data-tone='threat'] .sim-path__node:nth-child(n + 3)[data-reached='true'] .sim-path__dot {
+  border-color: var(--sg-threat);
+  background: var(--sg-threat-12);
+  color: var(--sim-threat-text);
+}
+.sim-path[data-tone='threat'] .sim-path__node[data-layer='down'] .sim-path__dot {
+  border-style: dashed;
+}
+.sim-path__label {
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  color: var(--sg-text-faint);
+  text-align: center;
+}
+.sim-path__node[data-reached='true'] .sim-path__label {
+  color: var(--sg-text);
+}
+.sim-path__outcome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-faint);
+}
+.sim-path__outcome svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  opacity: 0.4;
+}
+.sim-path__outcome-k {
+  font-weight: 700;
+}
+.sim-path__outcome[data-show='true'] {
+  color: var(--sg-teal);
+  font-weight: 650;
+}
+.sim-path__outcome[data-show='true'] svg {
+  opacity: 1;
+}
+.sim-path[data-tone='threat'] .sim-path__outcome[data-show='true'] {
+  color: var(--sim-threat-text);
+}
+
+/* ---------- Flow column ---------- */
+.sim-flow {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.sim-flow__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.sim-flow__title {
+  font-size: var(--fs-xl);
+}
+.sim-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-pill);
+}
+.sim-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sg-text-faint);
+}
+.sim-status[data-status='playing'] .sim-status__dot {
+  background: var(--sg-teal);
+  animation: sim-pulse 1.2s ease-in-out infinite;
+}
+.sim-status[data-status='done'] .sim-status__dot {
+  background: var(--sg-teal);
+}
+.sim-status[data-status='playing'] .sim-tm,
+.sim-status[data-status='done'] .sim-tm {
+  color: var(--sg-teal);
+}
+@keyframes sim-pulse {
+  50% {
+    box-shadow: 0 0 0 5px var(--sg-teal-14);
+  }
+}
+
+.sim-compare {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+.sim-seg > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+}
+.sim-seg > button svg {
+  width: 15px;
+  height: 15px;
+}
+.sim-seg > button[data-tone='threat'][aria-pressed='true'] {
+  background: var(--sg-threat-12);
+  color: var(--sim-threat-text);
+  box-shadow: inset 0 0 0 1px rgba(255, 77, 94, 0.55);
+}
+
+/* Vertical stepper */
+.sim-steps {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+.sim-step {
+  position: relative;
+}
+.sim-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 44px;
+  bottom: -8px;
+  inset-inline-start: 25px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--sg-line-strong);
+  transition: background-color 0.4s;
+}
+.sim-step[data-state='done']::after {
+  background: var(--sg-teal-40);
+}
+.sim-step__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  transition: background-color var(--dur-2);
+}
+.sim-step__btn:hover {
+  background: rgba(243, 246, 250, 0.04);
+}
+.sim-step__marker {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--sg-line-strong);
+  border-radius: 9px;
+  background: var(--sg-navy-1);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sg-text-faint);
+  transition:
+    background-color 0.35s,
+    border-color 0.35s,
+    color 0.35s,
+    box-shadow 0.35s;
+}
+.sim-step__marker svg {
+  width: 15px;
+  height: 15px;
+}
+.sim-step[data-state='done'] .sim-step__marker {
+  border-color: var(--sg-teal-40);
+  background: var(--sg-teal-08);
+  color: var(--sg-teal);
+}
+.sim-step[data-state='current'] .sim-step__marker {
+  border-color: var(--sg-teal);
+  background: var(--sg-teal);
+  color: var(--sg-on-teal);
+  box-shadow: 0 0 18px -4px var(--sg-teal-40);
+}
+.sim-step[data-tone='missed'][data-state='current'] .sim-step__marker,
+.sim-step[data-tone='missed'][data-state='done'] .sim-step__marker {
+  border-style: dashed;
+  border-color: var(--sg-text-faint);
+  background: var(--sg-navy-3);
+  color: var(--sg-text-muted);
+  box-shadow: none;
+}
+.sim-step[data-tone='threat'][data-state='current'] .sim-step__marker,
+.sim-step[data-tone='threat'][data-state='done'] .sim-step__marker {
+  border-color: var(--sg-threat);
+  background: var(--sg-threat-12);
+  color: var(--sim-threat-text);
+  box-shadow: none;
+}
+.sim-step__text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.sim-step__kicker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .sim-step__kicker {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+}
+.sim-step__title {
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  line-height: 1.4;
+  color: var(--sg-text-muted);
+}
+.sim-step[data-state='current'] .sim-step__title {
+  color: var(--sg-text);
+}
+.sim-step[data-state='upcoming'] .sim-step__title {
+  color: var(--sg-text-faint);
+}
+.sim-step__bar {
+  position: absolute;
+  bottom: 2px;
+  inset-inline: 54px 10px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--sg-line);
+}
+.sim-step__bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--sg-teal);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: sim-fill var(--sim-dur, 1600ms) linear forwards;
+}
+html[dir='rtl'] .sim-step__bar::after {
+  transform-origin: right center;
+}
+.sim-step__bar[data-paused='true']::after {
+  animation-play-state: paused;
+}
+@keyframes sim-fill {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Step detail (all panes stacked → stable height, cross-fade) */
+.sim-detail {
+  display: grid;
+  padding: var(--space-4);
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-md);
+  background: rgba(7, 11, 20, 0.5);
+}
+.sim-pane {
+  grid-area: 1 / 1;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  min-width: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.45s var(--ease-out),
+    visibility 0s linear 0.45s;
+}
+.sim-pane[data-active='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.4s ease 0.05s,
+    transform 0.55s var(--ease-out) 0.05s,
+    visibility 0s;
+}
+/* Idle "ready" state: centred in the reserved height so the panel never looks empty. */
+.sim-pane--idle {
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  padding-block: var(--space-4);
+}
+.sim-idle__ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  margin-block-end: var(--space-2);
+  border-radius: 50%;
+  color: var(--sim-hue);
+  background: radial-gradient(circle, var(--sim-hue-12) 0%, transparent 70%);
+  box-shadow:
+    inset 0 0 0 1px var(--sg-line-strong, rgba(243, 246, 250, 0.16)),
+    0 0 0 10px rgba(7, 11, 20, 0.35),
+    0 0 0 11px var(--sg-line);
+}
+.sim-idle__ring svg {
+  width: 30px;
+  height: 30px;
+}
+/* Slow sonar pulse (cinematic only). */
+.sim-idle__ring::after {
+  content: '';
+  position: absolute;
+  inset: -11px;
+  border-radius: 50%;
+  border: 1px solid var(--sim-hue);
+  opacity: 0;
+  animation: sim-sonar 2.8s var(--ease-out) infinite;
+}
+@keyframes sim-sonar {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+html[data-mode='static'] .sim-idle__ring::after {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-idle__ring::after {
+    animation: none;
+  }
+}
+.sim-idle__hint {
+  max-width: 38ch;
+  color: var(--sg-text-muted);
+  font-size: var(--fs-sm);
+}
+.sim-idle__meta {
+  color: var(--sg-text-faint);
+}
+.sim-pane__kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 750;
+  color: var(--sg-text);
+}
+.sim-pane__kicker svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+.sim-pane[data-tone='defended'] .sim-pane__kicker {
+  color: var(--sg-teal);
+}
+.sim-pane[data-tone='threat'] .sim-pane__kicker {
+  color: var(--sim-threat-text);
+}
+.sim-pane__body {
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.sim-signals {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+.sim-signals li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+  color: var(--sg-text-muted);
+}
+.sim-signals strong {
+  color: var(--sg-text);
+}
+.sim-signals__n {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--sim-hue);
+  color: var(--sim-hue-on);
+}
+.sim-signals[data-mode='missed'] .sim-signals__n {
+  background: var(--sg-navy-4);
+  color: var(--sg-text-faint);
+}
+.sim-signals__missed {
+  font-style: italic;
+  color: var(--sg-text-faint);
+}
+.sim-services {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* Controls */
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.sim-controls__nav {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-inline-start: auto;
+}
+
+/* Disclaimer — always visible */
+.sim-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 181, 71, 0.3);
+  border-radius: var(--r-sm);
+  background: rgba(255, 181, 71, 0.06);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--sg-text);
+}
+.sim-disclaimer svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  color: var(--sg-phishing);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 959.98px) {
+  .sim-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 639.98px) {
+  .sim-shell {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+  .sim-pick__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sim-email__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+  .sim-login__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sim-compare .segmented {
+    width: 100%;
+  }
+  .sim-seg > button {
+    flex: 1;
+    justify-content: center;
+    padding-inline: 0.6em;
+  }
+}

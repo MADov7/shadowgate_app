@@ -6,3 +6,12 @@ playwright-report
 shots
 *.log
 .DS_Store
+
+# Secrets (MONGODB_URI, JWT_SECRET, ...) — never commit
+.env*
+
+# Generated / heavy outputs
+dist-artifact
+.netlify
+ad-package/render/work/
+ad-package/render/*.mp4

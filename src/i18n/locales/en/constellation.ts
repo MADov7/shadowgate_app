@@ -1,4 +1,26 @@
-// OWNER: builder agent for the 'constellation' area. Replace these placeholder keys freely; keep ar/constellation.ts in sync.
+// OWNER: world-scenes agent — the service constellation section (#explore). Keep ar/constellation.ts in sync.
 export const constellationEn = {
-  title: 'Constellation',
+  eyebrow: 'SG//EXPLORE · Service constellation',
+  title: 'Explore what we can help with',
+  lead: 'Eight business services, each with a clear scope, practical deliverables and an estimated duration.',
+  telemetry: 'Service {n} / {total}',
+  counterLabel: 'Service {n} of {total}',
+  hintScroll: 'Scroll to explore',
+  hintDrag: 'Drag to rotate',
+  hintClick: 'Click to open',
+  hintTap: 'Tap to open',
+  hintKeys: 'Arrow keys rotate the view when a service is focused.',
+  hotspotLabel: 'View details: {name}',
+  hotspotOpen: 'Open',
+  objectsLabel: 'Service objects',
+  indexLabel: 'Service index',
+  dotLabel: 'Go to service {n}: {name}',
+  announce: 'Service {n} of {total}: {name}',
+  includedInPackage: 'Included in your package',
+  durationShort: 'Duration',
+  pricingShort: 'Pricing',
+  audienceShort: 'For',
+  staticLead:
+    'All eight business services at a glance. Open any service for its scope, deliverables and estimated duration.',
+  gridLabel: 'Business services',
 } as const;

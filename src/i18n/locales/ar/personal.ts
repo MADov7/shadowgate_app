@@ -1,5 +1,26 @@
 import type { personalEn } from '../en/personal';
 
 export const personalAr: Record<keyof typeof personalEn, string> = {
-  title: 'Personal',
+  eyebrow: 'SG//INDIVIDUALS',
+  title: 'مساعدة أمنية لك ولعائلتك',
+  lead: 'جلسات ودّية موجَّهة للحسابات والأجهزة وإعدادات الخصوصية التي تستخدمها كل يوم. بلا مصطلحات معقدة ولا ضغط — نشرح كل خطوة، وتبقى أنت صاحب القرار.',
+  listLabel: 'خدمات الأفراد',
+  counter: '{index} / {total}',
+  priceLabel: 'سعر توضيحي لمشروع دراسي',
+  bookFor: 'احجز استشارة لخدمة {name}',
+  addFor: 'أضف {name} إلى الطلب',
+  inRequestFor: '{name} ضمن طلبك',
+  detailsFor: 'عرض تفاصيل {name}',
+  reassureTitle: 'ما الذي تتوقعه',
+  reassure1Title: 'إرشاد خطوة بخطوة',
+  reassure1Body: 'نراجع معك كل إعداد ونشرح أهميته، وفق الوتيرة التي تناسبك.',
+  reassure2Title: 'أجهزتك تبقى ملكك',
+  reassure2Body: 'لا نصل إلى أجهزتك أو حساباتك أبدًا دون حضورك وموافقتك.',
+  reassure3Title: 'لا يوجد أي فحص عن بُعد',
+  reassure3Body: 'هذا الموقع لا يفحص هاتفك أو حاسوبك أو شبكتك المنزلية — لا الآن ولا في أي وقت.',
+  flowTitle: 'كيف تسير الجلسة',
+  flow1: 'اختر الجلسة والموعد',
+  flow2: 'التقِ بنا عبر الإنترنت أو حضوريًا',
+  flow3: 'اخرج بخطوات تالية واضحة',
+  flowNote: 'الحجز هنا عرض لمشروع دراسي — يُحفظ في متصفحك فقط.',
 };

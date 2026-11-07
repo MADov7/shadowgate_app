@@ -47,6 +47,13 @@ body {
   overflow-x: clip;
 }
 
+/* body's overflow-x propagates to the viewport, and phone browsers still widen the layout to fit overflowing
+   content. Decorative scrims and glows inside sections reach past the screen edge on purpose, so clip them at
+   the content box: no sideways scroll on phones, identical look (main spans the full width). */
+main {
+  overflow-x: clip;
+}
+
 img,
 svg,
 video,

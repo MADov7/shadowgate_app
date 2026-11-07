@@ -1,0 +1,689 @@
+/* Welcome gate — full-screen overlay above the 3D canvas.
+   Transparent in cinematic mode (the 3D gate shows through); the scrims keep the copy legible. */
+.wl {
+  --wl-scrim: 1;
+  --wl-flash: 0;
+  --wl-tags: 1;
+  --wl-pad-x: clamp(16px, 3.2vw, 44px);
+  --wl-pad-y: clamp(14px, 2.4vw, 28px);
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-welcome);
+  display: flex;
+  flex-direction: column;
+  padding: var(--wl-pad-y) var(--wl-pad-x);
+  padding-bottom: max(var(--wl-pad-y), env(safe-area-inset-bottom));
+  overflow: hidden;
+  color: var(--sg-text);
+  overscroll-behavior: contain;
+}
+
+/* ---------- Atmosphere layers ---------- */
+.wl__scrim,
+.wl__flash,
+.wl__grain,
+.wl__hud,
+.wl__tags {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.wl__scrim {
+  opacity: var(--wl-scrim);
+  background:
+    linear-gradient(180deg, rgba(7, 11, 20, 0.78) 0, rgba(7, 11, 20, 0) 20%),
+    linear-gradient(0deg, rgba(7, 11, 20, 0.96) 0, rgba(7, 11, 20, 0.78) 24%, rgba(7, 11, 20, 0.2) 46%, rgba(7, 11, 20, 0) 58%),
+    radial-gradient(ellipse 75% 70% at 50% 42%, transparent 48%, rgba(3, 5, 10, 0.72) 100%);
+}
+.wl__flash {
+  opacity: var(--wl-flash);
+  background: radial-gradient(
+    ellipse 42% 52% at 50% 48%,
+    rgba(217, 255, 244, 0.6),
+    rgba(53, 242, 196, 0.28) 42%,
+    rgba(53, 242, 196, 0) 76%
+  );
+  mix-blend-mode: screen;
+}
+.wl__grain {
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* ---------- HUD frame ---------- */
+.wl__hud {
+  opacity: var(--wl-scrim);
+  animation: wl-fade 1.2s var(--ease-out) 0.2s both;
+}
+.wl__corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid rgba(243, 246, 250, 0.3);
+}
+.wl__corner--ts {
+  inset-block-start: 10px;
+  inset-inline-start: 10px;
+  border-block-start-width: 1px;
+  border-inline-start-width: 1px;
+}
+.wl__corner--te {
+  inset-block-start: 10px;
+  inset-inline-end: 10px;
+  border-block-start-width: 1px;
+  border-inline-end-width: 1px;
+}
+.wl__corner--bs {
+  inset-block-end: 10px;
+  inset-inline-start: 10px;
+  border-block-end-width: 1px;
+  border-inline-start-width: 1px;
+}
+.wl__corner--be {
+  inset-block-end: 10px;
+  inset-inline-end: 10px;
+  border-block-end-width: 1px;
+  border-inline-end-width: 1px;
+}
+.wl__rule {
+  position: absolute;
+  top: 32%;
+  bottom: 38%;
+  width: 7px;
+  background: repeating-linear-gradient(180deg, rgba(243, 246, 250, 0.22) 0 1px, transparent 1px 11px);
+}
+.wl__rule::after {
+  content: '';
+  position: absolute;
+  inset-inline: -2px;
+  top: 40%;
+  height: 1px;
+  background: var(--sg-teal);
+  box-shadow: 0 0 8px var(--sg-teal);
+}
+.wl__rule--start {
+  inset-inline-start: 18px;
+}
+.wl__rule--end {
+  inset-inline-end: 18px;
+}
+.wl__scanline {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(53, 242, 196, 0.55) 30%, rgba(217, 255, 244, 0.8) 50%, rgba(53, 242, 196, 0.55) 70%, transparent);
+  box-shadow: 0 0 18px 2px rgba(53, 242, 196, 0.25);
+  opacity: 0;
+  animation: wl-scan 2.8s var(--ease-in-out) 0.35s both;
+}
+@keyframes wl-scan {
+  0% {
+    transform: translateY(8svh);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(78svh);
+    opacity: 0;
+  }
+}
+
+/* ---------- Telemetry tags around the gate (3D gate ≈ 22–76% of the height, ±26vh wide) ---------- */
+.wl__tags {
+  opacity: var(--wl-tags);
+  animation: wl-fade 1s var(--ease-out) 0.7s both;
+}
+.wl__tag {
+  position: absolute;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--sg-text-muted);
+  white-space: nowrap;
+}
+.wl__tag-sub {
+  color: var(--sg-text-faint);
+}
+.wl__tag--top {
+  top: calc(var(--wl-gate-top, 22svh) - 5.5svh);
+  inset-inline: 0;
+  margin-inline: auto;
+  width: max-content;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-pill);
+  background: rgba(7, 11, 20, 0.55);
+  color: var(--sg-text);
+}
+.wl__tag--start,
+.wl__tag--end {
+  padding-block: 6px;
+}
+.wl__tag--start {
+  top: 40svh;
+  inset-inline-end: calc(50% + 30svh);
+  align-items: flex-end;
+  text-align: end;
+  padding-inline-end: 56px;
+}
+.wl__tag--end {
+  top: 54svh;
+  inset-inline-start: calc(50% + 30svh);
+  padding-inline-start: 56px;
+}
+/* Leader lines pointing at the gate. */
+.wl__tag--start::after,
+.wl__tag--end::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(243, 246, 250, 0.4), rgba(53, 242, 196, 0.8));
+}
+.wl__tag--start::after {
+  inset-inline-end: 0;
+}
+.wl__tag--end::after {
+  inset-inline-start: 0;
+  background: linear-gradient(90deg, rgba(53, 242, 196, 0.8), rgba(243, 246, 250, 0.4));
+}
+html[dir='rtl'] .wl__tag--start::after {
+  background: linear-gradient(90deg, rgba(53, 242, 196, 0.8), rgba(243, 246, 250, 0.4));
+}
+html[dir='rtl'] .wl__tag--end::after {
+  background: linear-gradient(90deg, rgba(243, 246, 250, 0.4), rgba(53, 242, 196, 0.8));
+}
+/* The SVG gate stands at --sgate-top (10–11svh): seat the plaque on its frame, clear of the top bar. */
+.wl[data-static='true'] {
+  --wl-gate-top: 15.5svh;
+}
+@media (max-width: 700px) {
+  .wl[data-static='true'] {
+    --wl-gate-top: 16.5svh;
+  }
+}
+
+.wl__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--sg-text-faint);
+}
+.wl__dot[data-tone='sealed'],
+.wl__dot[data-tone='ready'] {
+  background: var(--sg-teal);
+  box-shadow: 0 0 0 3px var(--sg-teal-14);
+  animation: wl-pulse 2.4s var(--ease-in-out) infinite;
+}
+.wl__dot[data-tone='open'] {
+  background: var(--sg-teal-soft);
+  box-shadow: 0 0 10px var(--sg-teal);
+}
+.wl__dot[data-tone='loading'] {
+  background: var(--sg-phishing);
+  animation: wl-pulse 1.2s var(--ease-in-out) infinite;
+}
+@keyframes wl-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------- Top bar ---------- */
+.wl__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  animation: wl-fade 0.9s var(--ease-out) 0.05s both;
+  transition:
+    opacity 0.45s var(--ease-out),
+    transform 0.6s var(--ease-out);
+}
+.wl__brand {
+  display: inline-flex;
+  padding: 6px 4px;
+}
+.wl__brand .sg-lockup__mark {
+  width: 34px;
+  height: 34px;
+}
+.wl__brand .sg-lockup__word {
+  font-size: 1rem;
+}
+.wl__top-tele {
+  position: absolute;
+  inset-inline: 0;
+  margin-inline: auto;
+  width: max-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.wl__sep {
+  width: 18px;
+  height: 1px;
+  background: var(--sg-teal-40);
+}
+.wl__controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-pill);
+  background: rgba(7, 11, 20, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* ---------- Main copy ---------- */
+.wl__content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: clamp(12px, 1.6vw, 18px);
+  width: 100%;
+  max-width: 1040px;
+  margin: auto auto 0;
+  padding-block-end: clamp(18px, 3svh, 36px);
+  text-align: center;
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.8s var(--ease-out),
+    filter 0.5s var(--ease-out);
+}
+.wl__content > * {
+  animation: wl-rise 1s var(--ease-out) both;
+}
+.wl__eyebrow {
+  animation-delay: 0.25s;
+}
+.wl__title {
+  animation-delay: 0.35s;
+}
+.wl__actions {
+  animation-delay: 0.55s;
+}
+.wl__slogan {
+  animation-delay: 0.7s;
+}
+.wl__eyebrow::before {
+  display: none;
+}
+.wl__eyebrow {
+  padding: 5px 12px;
+  border: 1px solid var(--sg-teal-24);
+  border-radius: var(--r-pill);
+  background: rgba(7, 11, 20, 0.5);
+}
+.wl__title {
+  max-width: 14em;
+  font-size: clamp(2.05rem, 1.15rem + 3.3vw, 4.5rem);
+  font-weight: 780;
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  background: linear-gradient(180deg, #ffffff 25%, #c3cfdd 75%, #93a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 6px 28px rgba(0, 0, 0, 0.55));
+}
+html[lang='ar'] .wl__title {
+  letter-spacing: 0;
+  line-height: 1.28;
+  font-weight: 800;
+}
+
+.wl__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 18px;
+  margin-block-start: 6px;
+}
+
+/* Primary "Enter" — solid teal, shimmer sweep, and a light that travels around a halo ring
+   (21st.dev shimmer-button pattern, re-implemented natively). */
+.wl__enter-wrap {
+  position: relative;
+  display: inline-flex;
+  border-radius: var(--r-pill);
+}
+.wl__enter-halo {
+  position: absolute;
+  inset: -7px;
+  border-radius: inherit;
+  border: 1px solid rgba(53, 242, 196, 0.22);
+  pointer-events: none;
+}
+.wl__enter-halo::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(from var(--sg-angle), transparent 0deg, var(--sg-teal-soft) 50deg, transparent 110deg, transparent 360deg);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: sg-spin 4.5s linear infinite;
+}
+.wl__enter-halo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(53, 242, 196, 0.35);
+  animation: wl-halo 2.8s var(--ease-out) 1.4s infinite;
+}
+@keyframes wl-halo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(53, 242, 196, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgba(53, 242, 196, 0);
+  }
+}
+.wl__enter {
+  min-height: 58px;
+  padding-inline: 1.8em 0.6em;
+  gap: 0.75em;
+  overflow: hidden;
+  isolation: isolate;
+  font-size: 1.05rem;
+  font-weight: 760;
+  letter-spacing: 0.005em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -8px 18px rgba(4, 17, 13, 0.18),
+    0 14px 44px -12px rgba(53, 242, 196, 0.65);
+}
+.wl__enter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.65) 48%, transparent 64%);
+  transform: translateX(-130%);
+  animation: wl-shimmer 4.2s var(--ease-in-out) 1.6s infinite;
+}
+@keyframes wl-shimmer {
+  0% {
+    transform: translateX(-130%);
+  }
+  38%,
+  100% {
+    transform: translateX(130%);
+  }
+}
+html[dir='rtl'] .wl__enter::after {
+  animation-direction: reverse;
+}
+.wl__enter:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 18px 56px -10px rgba(53, 242, 196, 0.8);
+}
+.wl__enter:focus-visible {
+  outline-offset: 10px;
+}
+.wl__enter-kbd {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin-inline-start: 0.2em;
+  border-radius: 50%;
+  background: rgba(4, 17, 13, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(4, 17, 13, 0.18);
+}
+.wl__enter-kbd svg {
+  width: 16px;
+  height: 16px;
+}
+html[dir='rtl'] .wl__enter-kbd svg {
+  transform: scaleX(-1);
+}
+
+.wl__direct {
+  min-height: 48px;
+  color: var(--sg-text-muted);
+  font-size: var(--fs-md);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: rgba(243, 246, 250, 0.22);
+  text-underline-offset: 6px;
+}
+.wl__direct:hover {
+  color: var(--sg-text);
+  text-decoration-color: var(--sg-teal);
+}
+.wl__direct svg {
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.wl__direct:hover svg {
+  transform: translateX(3px);
+}
+html[dir='rtl'] .wl__direct:hover svg {
+  transform: scaleX(-1) translateX(3px);
+}
+
+.wl__slogan {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  margin-block-start: 4px;
+  color: var(--sg-text-muted);
+  font-size: var(--fs-sm);
+}
+.wl__slogan [lang='ar'] {
+  font-family: var(--font-ar);
+  font-weight: 700;
+  font-size: 1.05em;
+  color: var(--sg-teal-soft);
+}
+.wl__slogan [lang='en'] {
+  font-family: var(--font-sans);
+}
+.wl__slogan-sep {
+  width: 24px;
+  height: 1px;
+  background: var(--sg-line-strong);
+}
+
+/* ---------- Bottom bar ---------- */
+.wl__bottom {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--sg-line);
+  animation: wl-fade 1s var(--ease-out) 0.9s both;
+  transition: opacity 0.4s var(--ease-out);
+}
+.wl__world,
+.wl__keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.wl__keys .kbd {
+  line-height: 1.2;
+}
+
+/* Telemetry in Arabic: Tajawal instead of the Latin mono face. */
+html[lang='ar'] .wl .telemetry {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+/* ---------- Skip ---------- */
+.wl__skip {
+  position: absolute;
+  z-index: 3;
+  inset-block-end: calc(var(--wl-pad-y) + 4px);
+  inset-inline-end: var(--wl-pad-x);
+  min-height: 40px;
+  gap: 10px;
+  animation: wl-fade 0.5s var(--ease-out) 0.4s both;
+}
+.wl__skip[hidden] {
+  display: none;
+}
+.wl__skip .kbd {
+  padding: 1px 5px;
+}
+
+/* ---------- Entering ---------- */
+.wl[data-state='entering'] .wl__content {
+  opacity: 0;
+  transform: translateY(-28px) scale(0.97);
+  filter: blur(6px);
+}
+.wl[data-state='entering'] .wl__top {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+.wl[data-state='entering'] .wl__bottom {
+  opacity: 0;
+}
+/* Static entrance: the SVG gate opens, then the whole overlay crossfades into the site. */
+.wl[data-kind='static'][data-state='entering'] {
+  opacity: 0;
+  transition: opacity 0.55s var(--ease-in-out) 1.35s;
+}
+.wl[data-kind='static'][data-state='entering'] .wl__scrim,
+.wl[data-kind='static'][data-state='entering'] .wl__tags,
+.wl[data-kind='static'][data-state='entering'] .wl__hud {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out) 0.2s;
+}
+/* Reduced motion: no movement at all — a plain 300 ms crossfade (overrides the global motion kill-switch). */
+.wl[data-kind='reduced'][data-state='entering'],
+html[data-motion='reduced'] .wl[data-kind='reduced'][data-state='entering'] {
+  opacity: 0;
+  transition: opacity 300ms linear !important;
+}
+.wl[data-kind='reduced'][data-state='entering'] .wl__content,
+.wl[data-kind='reduced'][data-state='entering'] .wl__top {
+  transform: none;
+  filter: none;
+}
+
+@keyframes wl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes wl-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .wl__top-tele {
+    display: none;
+  }
+}
+@media (max-width: 820px) {
+  .wl__tag--start,
+  .wl__tag--end,
+  .wl__rule {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .wl__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+  .wl__enter-wrap {
+    width: min(100%, 380px);
+  }
+  .wl__enter {
+    width: 100%;
+    justify-content: space-between;
+    padding-inline: 1.4em 0.5em;
+  }
+  .wl__enter > span:first-child {
+    flex: 1;
+    text-align: start;
+  }
+  .wl__eyebrow {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    line-height: 1.6;
+    text-wrap: balance;
+  }
+  .wl__keys {
+    display: none;
+  }
+  .wl__bottom {
+    justify-content: center;
+  }
+  /* Keep the sound toggle's accessible name while showing only its icon. */
+  .wl__controls .sg-sound__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .wl__brand .sg-lockup__mark {
+    width: 30px;
+    height: 30px;
+  }
+  .wl__skip {
+    inset-inline: 0;
+    margin-inline: auto;
+    width: max-content;
+  }
+}
+@media (max-height: 620px) {
+  .wl__title {
+    font-size: clamp(1.8rem, 1rem + 2.6vw, 3rem);
+  }
+  .wl__tag--top {
+    display: none;
+  }
+}
+html[data-motion='reduced'] .wl *,
+html[data-motion='reduced'] .wl *::before,
+html[data-motion='reduced'] .wl *::after {
+  animation-delay: 0s !important;
+}

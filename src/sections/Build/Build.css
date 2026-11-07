@@ -1,0 +1,529 @@
+/* Scene E — Build Your Protection. Two glass columns flank the 3D structure (centre column stays clear). */
+.build {
+  --build-p: 0;
+  --build-dir: 1;
+}
+html[dir='rtl'] .build {
+  --build-dir: -1;
+}
+/* Static mode: no scroll scrubbing — everything is simply visible. */
+html[data-mode='static'] .build {
+  --build-p: 1 !important;
+}
+
+.build__pin {
+  display: flex;
+  align-items: center;
+}
+
+.build__grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 400px) minmax(80px, 1fr) minmax(340px, 420px);
+  grid-template-areas: 'intro stage summary';
+  align-items: center;
+  gap: clamp(16px, 3vw, 48px);
+  height: 100%;
+  padding-block: calc(var(--nav-h) + 24px) 32px;
+}
+
+/* ---------- Intro column ---------- */
+.build__intro {
+  --enter: clamp(0, calc((var(--build-p) - 0.12) * 3), 1);
+  grid-area: intro;
+  display: grid;
+  gap: var(--space-4);
+  align-content: center;
+  opacity: var(--enter);
+  translate: calc((1 - var(--enter)) * -56px * var(--build-dir)) 0;
+}
+.build__intro::before {
+  /* readability scrim over the 3D scene */
+  content: '';
+  position: absolute;
+  inset: -40px -60px;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(7, 11, 20, 0.8), rgba(7, 11, 20, 0.55) 60%, rgba(7, 11, 20, 0));
+  pointer-events: none;
+}
+.build__intro {
+  position: relative;
+  isolation: isolate;
+}
+.build__title {
+  font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+}
+.build__lead {
+  color: var(--sg-text-muted);
+  font-size: var(--fs-md);
+  max-width: 44ch;
+}
+
+.build__note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-inline-start: 2px solid var(--sg-teal-40);
+  background: linear-gradient(90deg, var(--sg-teal-08), transparent);
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+html[dir='rtl'] .build__note {
+  background: linear-gradient(270deg, var(--sg-teal-08), transparent);
+}
+.build__note svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--sg-teal);
+}
+
+/* ---------- Completeness meter ---------- */
+.build-meter {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-md);
+  background: rgba(10, 16, 32, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.build-meter__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.build-meter__value {
+  font-weight: 700;
+  font-size: var(--fs-md);
+}
+.build-meter__tele {
+  color: var(--sg-teal);
+  direction: ltr;
+}
+.build-meter__pips {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  filter: drop-shadow(0 0 6px rgba(53, 242, 196, 0.35));
+}
+.build-pip {
+  height: 14px;
+  clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+  background: rgba(243, 246, 250, 0.1);
+}
+.build-pip[data-lit] {
+  /* pips assemble one after another as the section scrolls in (fully lit before the pin starts) */
+  --on: clamp(0, calc((var(--build-p) - 0.3 - var(--i) * 0.025) * 14), 1);
+  background: linear-gradient(180deg, var(--sg-teal-soft), var(--sg-teal));
+  opacity: calc(0.16 + 0.84 * var(--on));
+  transform: scaleY(calc(0.55 + 0.45 * var(--on)));
+}
+.build-meter__hint {
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+
+/* ---------- Centre stage (3D in cinematic mode, SVG gate in static mode) ---------- */
+.build__stage {
+  grid-area: stage;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+.build__figure {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin: 0;
+}
+.build__figure figcaption {
+  text-align: center;
+}
+html[lang='ar'] .build__figure figcaption {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: var(--fs-xs);
+}
+
+.build-gate {
+  width: min(320px, 100%);
+  height: auto;
+  overflow: visible;
+}
+.build-gate__grid line {
+  stroke: rgba(243, 246, 250, 0.05);
+  stroke-width: 1;
+}
+.build-gate__ground {
+  stroke: var(--sg-line-strong);
+  stroke-width: 1;
+}
+.build-gate__floor {
+  transition: rx var(--dur-3) var(--ease-out);
+}
+.build-gate__route {
+  fill: none;
+  stroke: rgba(243, 246, 250, 0.14);
+  stroke-width: 7;
+  stroke-dasharray: 3 7;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+  transition: stroke var(--dur-3) var(--ease-out);
+}
+.build-gate[data-complete] .build-gate__route {
+  stroke: var(--sg-teal);
+  stroke-dasharray: none;
+}
+.build-gate__seg-base {
+  stroke: rgba(243, 246, 250, 0.2);
+  stroke-width: 18;
+  transition: stroke var(--dur-3) var(--ease-out) calc(var(--i) * 60ms);
+}
+.build-gate__seg-core {
+  stroke: var(--sg-navy-2);
+  stroke-width: 15;
+  transition: stroke var(--dur-3) var(--ease-out) calc(var(--i) * 60ms);
+}
+.build-gate__seg[data-lit] .build-gate__seg-base {
+  stroke: var(--sg-teal-40);
+}
+.build-gate__seg[data-lit] .build-gate__seg-core {
+  stroke: var(--sg-teal);
+}
+
+/* ---------- Request summary panel ---------- */
+.build-sum {
+  --enter: clamp(0, calc((var(--build-p) - 0.18) * 3), 1);
+  grid-area: summary;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100svh - var(--nav-h) - 64px);
+  overflow: hidden;
+  background: var(--sg-glass-strong);
+  opacity: var(--enter);
+  translate: calc((1 - var(--enter)) * 56px * var(--build-dir)) 0;
+}
+.build-sum__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-block-end: 1px solid var(--sg-line);
+}
+.build-sum__title {
+  margin-top: 4px;
+  font-size: var(--fs-xl);
+  outline-offset: 4px;
+}
+.build-sum__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 16px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sg-line-strong) transparent;
+}
+.build-sum__label {
+  margin-block-end: 8px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--sg-text-faint);
+  text-transform: uppercase;
+}
+html[lang='ar'] .build-sum__label {
+  letter-spacing: 0;
+}
+.build-sum__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px 18px;
+  border-block-start: 1px solid var(--sg-line);
+  background: rgba(7, 11, 20, 0.5);
+}
+.build-sum__foot .btn {
+  flex: 1 1 auto;
+}
+
+.build-services__list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+.build-row,
+.build-pkg__head {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+.build-row {
+  padding: 8px 6px 8px 10px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-sm);
+  background: rgba(243, 246, 250, 0.025);
+  transition: border-color var(--dur-2);
+}
+html[dir='rtl'] .build-row {
+  padding: 8px 10px 8px 6px;
+}
+.build-row:hover {
+  border-color: var(--sg-teal-24);
+}
+.build-row__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--sg-teal-24);
+  border-radius: 10px;
+  background: var(--sg-teal-08);
+  color: var(--sg-teal);
+}
+.build-row__icon svg {
+  width: 20px;
+  height: 20px;
+}
+.build-row__icon--pkg {
+  background: var(--sg-teal);
+  color: var(--sg-on-teal);
+  border-color: var(--sg-teal);
+}
+.build-row__text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.build-row__kind {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sg-teal);
+}
+html[lang='ar'] .build-row__kind {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+  font-weight: 700;
+}
+.build-row__name {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.build-row__meta {
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+.build-row__auth {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: var(--fs-xs);
+  line-height: 1.45;
+  color: var(--sg-text-muted);
+}
+.build-row__auth svg {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  color: var(--sg-teal);
+}
+.build-row__remove {
+  color: var(--sg-text-muted);
+}
+.build-row__remove:hover {
+  color: var(--sg-text);
+}
+
+.build-pkg {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--sg-teal-24);
+  border-radius: var(--r-md);
+  background: linear-gradient(180deg, var(--sg-teal-08), rgba(53, 242, 196, 0.01));
+}
+.build-pkg__includes {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  padding-inline-start: 52px;
+}
+.build-pkg__includes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+.build-pkg__includes svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+  color: var(--sg-teal);
+}
+
+/* Empty state */
+.build-empty {
+  /* shrinks (and scrolls) before the footer actions are pushed out of a short panel */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  padding: 28px 20px 24px;
+  text-align: center;
+}
+.build-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-block-end: 6px;
+  border: 1px dashed var(--sg-teal-40);
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%, 0 14px);
+  background: var(--sg-teal-08);
+  color: var(--sg-teal);
+}
+.build-empty__icon svg {
+  width: 28px;
+  height: 28px;
+}
+.build-empty__title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+.build-empty__body {
+  max-width: 32ch;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.build-empty__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  list-style: none;
+}
+.build-empty__links .chip {
+  min-height: 44px;
+  text-decoration: none;
+}
+.build-empty__links .chip svg {
+  width: 16px;
+  height: 16px;
+  color: var(--sg-teal);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1180px) {
+  .build__grid {
+    grid-template-columns: minmax(280px, 360px) minmax(40px, 1fr) minmax(320px, 380px);
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .build__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'intro summary';
+  }
+  .build__stage {
+    display: none;
+  }
+  html[data-mode='static'] .build__grid {
+    grid-template-areas:
+      'intro stage'
+      'summary summary';
+  }
+  html[data-mode='static'] .build__stage {
+    display: grid;
+  }
+}
+
+@media (max-width: 819.98px) {
+  .build__grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: calc(var(--nav-h) + 8px) 16px;
+  }
+  .build__intro {
+    gap: var(--space-3);
+  }
+  .build__intro::before {
+    inset: -24px -16px;
+  }
+  .build__title {
+    font-size: clamp(1.6rem, 1.2rem + 3vw, 2.1rem);
+  }
+  .build__lead {
+    font-size: var(--fs-sm);
+  }
+  .build-meter {
+    padding: 12px 14px;
+  }
+  .build-sum {
+    flex: 0 1 auto;
+    max-height: 50svh;
+  }
+  .build-sum__head {
+    padding: 14px 16px 10px;
+  }
+  .build-sum__body {
+    padding: 12px 16px;
+  }
+  .build-sum__foot {
+    padding: 12px 16px 14px;
+  }
+  .build-empty {
+    padding: 16px 16px 12px;
+  }
+  .build-empty__icon {
+    width: 48px;
+    height: 48px;
+  }
+  /* The sticky scene must fit one phone screen: drop the decorative icon and the meter hint (the lead says it). */
+  html:not([data-mode='static']) .build-empty__icon,
+  html:not([data-mode='static']) .build-meter__hint {
+    display: none;
+  }
+  html[data-mode='static'] .build__grid {
+    padding-block: 64px 32px;
+  }
+  html[data-mode='static'] .build-sum {
+    max-height: none;
+  }
+}
+
+/* Short phones: keep the sticky scene inside 100svh. */
+@media (max-width: 819.98px) and (max-height: 760px) {
+  html:not([data-mode='static']) .build__lead {
+    display: none;
+  }
+  html:not([data-mode='static']) .build-meter__hint {
+    display: none;
+  }
+}

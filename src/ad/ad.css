@@ -1,0 +1,206 @@
+html,
+body,
+#ad-root {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+html.ad-transparent,
+html.ad-transparent body {
+  background: transparent !important;
+}
+
+.ad-frame {
+  position: relative;
+  overflow: hidden;
+  background: #070b14;
+}
+html.ad-transparent .ad-frame {
+  background: transparent;
+}
+.ad-frame canvas {
+  position: absolute !important;
+  inset: 0;
+}
+
+/* Picture FX that belong to the plate (light flashes, dips, vignette). */
+.ad-fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ad-fx--flash {
+  background: radial-gradient(ellipse at 50% 48%, #f3fffb 0%, #8af7da 28%, rgba(53, 242, 196, 0.35) 55%, rgba(53, 242, 196, 0) 80%);
+  mix-blend-mode: screen;
+}
+.ad-fx--impact {
+  background: radial-gradient(ellipse at 50% 46%, rgba(255, 77, 94, 0.55), rgba(255, 77, 94, 0.12) 40%, transparent 70%);
+  mix-blend-mode: screen;
+}
+.ad-fx--darken {
+  background: radial-gradient(ellipse at 50% 42%, rgba(7, 11, 20, 0.35), rgba(7, 11, 20, 0.92) 75%);
+}
+.ad-fx--black {
+  background: #000;
+}
+.ad-fx--vignette {
+  background: radial-gradient(ellipse at center, transparent 58%, rgba(2, 4, 8, 0.6) 100%);
+}
+
+/* Typography overlay */
+.ad-overlay {
+  position: absolute;
+  inset: 0;
+  color: #f3f6fa;
+  font-family: 'Manrope Variable', Manrope, sans-serif;
+  pointer-events: none;
+}
+.ad-overlay[lang='ar'] {
+  font-family: Tajawal, 'Manrope Variable', sans-serif;
+}
+.ad-lines,
+.ad-cta {
+  position: absolute;
+  inset-inline: 0;
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  text-align: center;
+}
+.ad-lines__text,
+.ad-cta__text {
+  position: relative;
+  margin: 0;
+  display: grid;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-shadow:
+    0 2px 18px rgba(0, 0, 0, 0.75),
+    0 0 2px rgba(0, 0, 0, 0.6);
+}
+.ad-overlay[lang='ar'] .ad-lines__text,
+.ad-overlay[lang='ar'] .ad-cta__text {
+  letter-spacing: 0;
+}
+.ad-teal {
+  color: #35f2c4;
+}
+.ad-cap {
+  position: relative;
+  filter: drop-shadow(0 0 10px rgba(53, 242, 196, 0.6));
+}
+.ad-scrim {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1400px;
+  height: 420px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(4, 7, 14, 0.62), rgba(4, 7, 14, 0) 68%);
+}
+.ad-overlay--9x16 .ad-scrim {
+  width: 1100px;
+  height: 640px;
+}
+.ad-scrim--wide {
+  height: 520px;
+}
+
+.ad-stacked,
+.ad-lockup {
+  position: absolute;
+  inset-inline: 0;
+  display: grid;
+  justify-items: center;
+}
+.ad-stacked {
+  gap: 34px;
+}
+.ad-lockup {
+  grid-auto-flow: column;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+}
+.ad-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -62%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(53, 242, 196, 0.28), rgba(53, 242, 196, 0) 65%);
+}
+.ad-word {
+  position: relative;
+  font-family: 'Manrope Variable', Manrope, sans-serif;
+  font-weight: 800;
+  white-space: nowrap;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+}
+.ad-word__gate {
+  color: #35f2c4;
+  margin-left: 0.4em;
+}
+.ad-cta__bar {
+  position: relative;
+  display: block;
+  width: 180px;
+  height: 3px;
+  border-radius: 3px;
+  background: #35f2c4;
+  box-shadow: 0 0 18px rgba(53, 242, 196, 0.8);
+  transform-origin: center;
+}
+.ad-slogan {
+  position: absolute;
+  inset-inline: 0;
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+  color: #c9d3e0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+.ad-overlay[lang='ar'] .ad-slogan {
+  font-family: Tajawal, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* Preview player chrome (not captured) */
+.ad-player {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #03050a;
+}
+.ad-player__stage {
+  transform-origin: center;
+}
+.ad-player__bar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(10, 16, 32, 0.85);
+  color: #f3f6fa;
+  font: 600 13px 'JetBrains Mono Variable', monospace;
+  z-index: 10;
+}
+.ad-player__bar button,
+.ad-player__bar a {
+  border: 1px solid rgba(243, 246, 250, 0.2);
+  background: transparent;
+  color: inherit;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}

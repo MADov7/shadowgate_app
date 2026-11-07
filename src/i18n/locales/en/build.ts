@@ -1,4 +1,26 @@
-// OWNER: builder agent for the 'build' area. Replace these placeholder keys freely; keep ar/build.ts in sync.
+// OWNER: conversion agent — Scene E "Build Your Protection". Keep ar/build.ts in sync.
 export const buildEn = {
-  title: 'Build',
+  eyebrow: 'SG//BUILD 09',
+  title: 'Build your protection',
+  lead: 'Every service you choose places one segment of the gate. It is a clear picture of your request — the scope you asked for, nothing hidden.',
+  meterLabel: 'Structure completeness',
+  meterValue: 'Structure: {count} of {max} segments',
+  meterHint: 'Each selected service, and a package, places one segment.',
+  meterComplete: 'All {max} segments placed.',
+  telemetry: 'SEGMENTS {count}/{max}',
+  summaryTitle: 'Your request',
+  summaryCount: '{count} item(s)',
+  packageLabel: 'Package',
+  packageIncludes: 'Includes {count} service(s)',
+  servicesLabel: 'Selected services',
+  removeService: 'Remove {name} from request',
+  pricingIllustrative: 'Illustrative · {amount} {per}',
+  emptyTitle: 'Your structure is waiting',
+  emptyBody: 'Add services from the catalog, quiz or packages.',
+  emptyCatalog: 'Service catalog',
+  emptyQuiz: 'Recommendation quiz',
+  emptyPackages: 'Packages',
+  continue: 'Continue to request',
+  edit: 'Edit request',
+  staticCaption: 'Symbolic gate — {count} of {max} segments lit',
 } as const;

@@ -1,0 +1,307 @@
+/* Demo booking dialog. */
+.bk-dialog {
+  max-width: min(780px, calc(100vw - 32px));
+}
+
+.bk-head__text {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-width: 0;
+}
+.bk-head .badge svg {
+  width: 13px;
+  height: 13px;
+}
+.bk-head__title {
+  font-size: var(--fs-2xl);
+}
+.bk-head__intro {
+  max-width: 60ch;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+
+.bk-form {
+  display: grid;
+  gap: 22px;
+}
+.bk-service-meta {
+  color: var(--sg-text-muted);
+}
+
+/* Day chips (radio) */
+.bk-days {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+.bk-day,
+.bk-time {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-sm);
+  background: rgba(7, 11, 20, 0.6);
+  color: var(--sg-text-muted);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-2),
+    background-color var(--dur-2),
+    color var(--dur-2);
+}
+.bk-day {
+  gap: 1px;
+  min-height: 76px;
+  padding: 8px 4px;
+  text-align: center;
+}
+.bk-day:hover,
+.bk-time:hover {
+  border-color: var(--sg-teal-40);
+  color: var(--sg-text);
+}
+.bk-day input,
+.bk-time input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.bk-day:has(input:checked),
+.bk-time:has(input:checked) {
+  border-color: var(--sg-teal);
+  background: var(--sg-teal);
+  color: var(--sg-on-teal);
+}
+.bk-day:has(input:focus-visible),
+.bk-time:has(input:focus-visible) {
+  outline: 2px solid var(--sg-teal);
+  outline-offset: 3px;
+}
+.bk-day__wd {
+  font-size: var(--fs-xs);
+  font-weight: 650;
+  line-height: 1.2;
+}
+.bk-day__num {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--sg-text);
+}
+.bk-day:has(input:checked) .bk-day__num {
+  color: var(--sg-on-teal);
+}
+.bk-day__mo {
+  font-size: var(--fs-xs);
+  line-height: 1.2;
+}
+
+/* Time grid (radio) */
+.bk-times {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+.bk-time {
+  min-height: 48px;
+  padding: 6px;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bk-formats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.bk-format__icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--sg-teal);
+}
+
+.bk-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.bk-notes {
+  min-height: 88px;
+}
+html[dir='rtl'] .bk-form input[dir='ltr'] {
+  text-align: end;
+}
+
+/* ---------- Confirmation "ticket" ---------- */
+.bk-done {
+  display: grid;
+  gap: 18px;
+  outline: none;
+  animation: bk-done-in var(--dur-3) var(--ease-out);
+}
+.bk-done:focus-visible {
+  outline: 2px solid var(--sg-teal);
+  outline-offset: 6px;
+  border-radius: var(--r-sm);
+}
+@keyframes bk-done-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+}
+.bk-done__note {
+  padding: 14px 16px;
+  border-inline-start: 3px solid var(--sg-teal);
+  border-radius: var(--r-xs);
+  background: var(--sg-teal-08);
+  font-size: var(--fs-lg);
+  font-weight: 650;
+  line-height: 1.5;
+}
+.bk-done__note[data-failed] {
+  border-color: var(--sg-phishing);
+  background: rgba(255, 181, 71, 0.08);
+}
+
+.bk-ticket {
+  --notch: 12px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  border: 1px solid var(--sg-teal-24);
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(20, 32, 53, 0.95), rgba(10, 16, 32, 0.95));
+  overflow: hidden;
+  /* perforation notches top and bottom where the stub tears off */
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at calc(100% - 190px) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - 190px) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at calc(100% - 190px) 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at calc(100% - 190px) 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+html[dir='rtl'] .bk-ticket {
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 190px 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at 190px 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+  mask:
+    radial-gradient(circle var(--notch) at 190px 0, transparent 98%, #000) top / 100% 51% no-repeat,
+    radial-gradient(circle var(--notch) at 190px 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+.bk-ticket__main {
+  display: grid;
+  gap: 12px;
+  padding: 20px 22px;
+}
+.bk-ticket__rows {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+.bk-ticket__rows div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 12px;
+}
+.bk-ticket__rows dt {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--sg-text-faint);
+}
+.bk-ticket__rows dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.bk-ticket__stub {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 6px;
+  padding: 20px 14px;
+  border-inline-start: 2px dashed var(--sg-teal-24);
+  background: var(--sg-teal-08);
+  text-align: center;
+}
+.bk-ticket__stamp {
+  padding: 4px 12px;
+  border: 2px solid var(--sg-phishing);
+  border-radius: 6px;
+  color: var(--sg-phishing);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transform: rotate(-8deg);
+  opacity: 0.9;
+}
+html[lang='ar'] .bk-ticket__stamp {
+  font-family: var(--font-ar);
+  letter-spacing: 0;
+}
+.bk-ticket__reflabel {
+  margin-top: 8px;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+.bk-ticket__ref {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--sg-teal);
+  direction: ltr;
+}
+
+@media (max-width: 639.98px) {
+  .bk-dialog {
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+  }
+  .bk-days {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .bk-day {
+    min-height: 68px;
+    padding: 6px 2px;
+  }
+  .bk-day__wd,
+  .bk-day__mo {
+    font-size: 0.6875rem;
+  }
+  .bk-times {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .bk-formats,
+  .bk-row {
+    grid-template-columns: 1fr;
+  }
+  .bk-ticket {
+    grid-template-columns: 1fr;
+    -webkit-mask: none;
+    mask: none;
+  }
+  html[dir='rtl'] .bk-ticket {
+    -webkit-mask: none;
+    mask: none;
+  }
+  .bk-ticket__stub {
+    border-inline-start: 0;
+    border-block-start: 2px dashed var(--sg-teal-24);
+  }
+  .bk-ticket__rows div {
+    grid-template-columns: 80px minmax(0, 1fr);
+  }
+}

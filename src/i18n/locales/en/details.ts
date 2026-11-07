@@ -1,4 +1,21 @@
-// OWNER: builder agent for the 'details' area. Replace these placeholder keys freely; keep ar/details.ts in sync.
+// OWNER: commerce agent — service details dialog. Keep ar/details.ts in sync.
 export const detailsEn = {
-  title: 'Details',
+  eyebrow: 'Service details',
+  audienceBusiness: 'Business service',
+  audiencePersonal: 'Personal service',
+  overview: 'Overview',
+  whoFor: 'Who it is for',
+  scope: 'Scope',
+  exclusions: 'Not included',
+  deliverables: 'Deliverables',
+  duration: 'Estimated duration',
+  pricing: 'Pricing',
+  coveredTitle: 'Covered by your package',
+  coveredBody: 'Your {pkg} package already includes this service, so there is no need to add it separately.',
+  authTitle: 'Authorization required',
+  authBody: 'Requires ownership or explicit written authorization of the systems being tested. We confirm authorization and scope in writing before any testing starts.',
+  inRequest: 'In request — view request',
+  included: 'Included in {pkg} — view request',
+  bookNote: 'Booking is a classwork demo: it is saved in this browser and no appointment is made.',
+  personalAddHint: 'You can also add it to a written request instead of booking.',
 } as const;

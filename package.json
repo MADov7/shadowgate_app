@@ -13,7 +13,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "landmask": "node scripts/build-landmask.mjs",
-    "shot": "node scripts/shot.mjs"
+    "shot": "node scripts/shot.mjs",
+    "build:web": "vite build",
+    "start": "vite preview --host 0.0.0.0 --port 5000",
+    "replit": "npm install --no-audit --no-fund && npm run build:web && npm start"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
@@ -48,5 +51,8 @@
     "vite": "^7.3.7",
     "vitest": "^3.2.7",
     "world-atlas": "^2.0.2"
+  },
+  "engines": {
+    "node": ">=20.19"
   }
 }

@@ -1,0 +1,44 @@
+/* Ambient sound toggle — icon reflects state; a tiny equaliser animates while sound is on. */
+.sg-sound[data-on='true'] {
+  color: var(--sg-teal);
+}
+.sg-sound__label {
+  font-weight: 650;
+}
+.sg-sound__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  margin-inline-start: 2px;
+}
+.sg-sound__bars i {
+  display: block;
+  width: 2px;
+  height: 3px;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transition: height var(--dur-3) var(--ease-out);
+}
+.sg-sound[data-on='true'] .sg-sound__bars i {
+  opacity: 1;
+  animation: sg-sound-eq 1.4s var(--ease-in-out) infinite alternate;
+}
+.sg-sound[data-on='true'] .sg-sound__bars i:nth-child(2) {
+  animation-delay: -0.35s;
+}
+.sg-sound[data-on='true'] .sg-sound__bars i:nth-child(3) {
+  animation-delay: -0.8s;
+}
+.sg-sound[data-on='true'] .sg-sound__bars i:nth-child(4) {
+  animation-delay: -1.1s;
+}
+@keyframes sg-sound-eq {
+  0% {
+    height: 3px;
+  }
+  100% {
+    height: 12px;
+  }
+}

@@ -1,4 +1,26 @@
-// OWNER: builder agent for the 'welcome' area. Replace these placeholder keys freely; keep ar/welcome.ts in sync.
+// Welcome gate (full-screen entrance). Telemetry strings are short, decorative HUD labels.
 export const welcomeEn = {
-  title: 'Welcome',
+  dialogLabel: 'Welcome to Shadow Gate',
+  brandLabel: 'SHADOW GATE',
+  eyebrow: 'Cybersecurity services · Businesses & individuals',
+  title: 'Your protection begins beyond this gate.',
+  enter: 'Enter Shadow Gate',
+  enterKey: 'Enter',
+  direct: 'Go directly to services',
+  skip: 'Skip intro',
+  skipKey: 'Esc',
+  statusOpening: 'Opening the gate…',
+  statusDone: 'You are inside Shadow Gate.',
+  gateSealed: 'GATE 01 // SEALED',
+  gateOpening: 'GATE 01 // OPENING',
+  access: 'SG-ACCESS',
+  accessNode: 'ACCESS NODE 00',
+  perimeter: 'PERIMETER // STANDBY',
+  perimeterOpen: 'PERIMETER // OPEN',
+  visitor: 'VISITOR SESSION',
+  worldLoading: 'WORLD // LOADING',
+  worldReady: 'WORLD // READY',
+  worldStatic: 'WORLD // STATIC VIEW',
+  keysHint: 'SCROLL OR PRESS ENTER',
+  controlsLabel: 'Welcome settings',
 } as const;

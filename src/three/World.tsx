@@ -1,5 +1,6 @@
 // Composition of the single persistent 3D world. Each child owns one part of the journey and reads
 // scrollState / stores itself, so React never re-renders this tree on scroll.
+// Frame order: CameraRig (priority −2) → GlobeRig (−1) → everything else (0) → Effects composer (1).
 import { Atmosphere } from './Atmosphere';
 import { BuildStructure } from './BuildStructure';
 import { CameraRig } from './CameraRig';
@@ -10,11 +11,13 @@ import { HorizonGate } from './HorizonGate';
 import { ParticleField } from './ParticleField';
 import { ServiceConstellation } from './ServiceConstellation';
 import { ThreatArcs } from './ThreatArcs';
+import { GlobeRig } from './core/GlobeRig';
 
 export function World() {
   return (
     <>
       <CameraRig />
+      <GlobeRig />
       <Atmosphere />
       <Gate />
       <ParticleField />

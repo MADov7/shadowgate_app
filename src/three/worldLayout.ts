@@ -43,10 +43,19 @@ export interface CamKey {
 }
 
 const last = constellationItemPos(CONSTELLATION_COUNT - 1);
-const first = constellationItemPos(0);
+
+/** Constellation camera keys (T 5.5 → 7.5): one settle point per service, a three-quarter view from the right. */
+function constellationRide(): CamKey[] {
+  const keys: CamKey[] = [];
+  for (let i = 0; i < CONSTELLATION_COUNT; i++) {
+    const y = constellationItemPos(i)[1];
+    keys.push({ T: 5.5 + (2 * i) / (CONSTELLATION_COUNT - 1), pos: [5.6, y + 0.35, -59.2], look: [0.4, y, -68], fov: 42 });
+  }
+  return keys;
+}
 
 /** Camera before entering (welcome page, entry = 0): outside the closed gate. */
-export const WELCOME_CAM: CamKey = { T: -1, pos: [0, 2.3, 12.5], look: [0, 2.5, 0], fov: 42 };
+export const WELCOME_CAM: CamKey = { T: -1, pos: [0, 1.7, 11.4], look: [0, 3.0, 0], fov: 42 };
 
 /**
  * Camera keyframes by T. Between keys the pose eases in/out, so the camera "settles" on each key —
@@ -58,21 +67,24 @@ export const CAM_KEYS: readonly CamKey[] = [
   // Radar — the globe sits left of centre so the event feed fits on the right.
   { T: 1, pos: [2.7, 2.9, -8.4], look: [1.25, 2.6, -16], fov: 44 },
   { T: 2.6, pos: [3.1, 3.3, -9.4], look: [1.0, 2.6, -16], fov: 44 },
-  // Defense Layers — elevated three-quarter view of the company network.
-  { T: 3, pos: [0.5, 9.5, -29.5], look: [0, 0.4, -42], fov: 46 },
-  { T: 4, pos: [-2.2, 8.2, -31.5], look: [0, 0.4, -42], fov: 46 },
-  { T: 5, pos: [-3.4, 7.4, -32.5], look: [0, 0.4, -42], fov: 46 },
-  // Constellation — camera rides down the vertical line, object focus follows scroll.
-  { T: 5.5, pos: [5.4, first[1] + 0.3, -59.5], look: [0.6, first[1], -68], fov: 42 },
-  { T: 7.5, pos: [5.4, last[1] + 0.3, -59.5], look: [0.6, last[1], -68], fov: 42 },
+  // Defense Layers — elevated three-quarter view of the company network (the network group itself is offset per
+  // aspect ratio / text direction so it sits beside the glass panel — see scenes/framing.ts).
+  { T: 3, pos: [0.55, 10.6, -28.0], look: [0, 0.4, -42], fov: 46 },
+  { T: 4, pos: [-2.45, 9.1, -30.25], look: [0, 0.4, -42], fov: 46 },
+  // …pulling back as the ongoing-review dome rises over the whole network.
+  { T: 5, pos: [-5.0, 11.0, -27.9], look: [0, 0.9, -42], fov: 46 },
+  // Constellation — camera rides down the vertical line and settles on each object as focus follows scroll
+  // (one key per service, so the eased camera pauses where the DOM panel changes).
+  ...constellationRide(),
   // Parked behind catalog / packages (canvas dimmed).
   { T: 8, pos: [7.5, last[1] + 3, -55], look: [0, last[1] + 1, -70], fov: 48 },
   // Build Your Protection.
-  { T: 8.5, pos: [0, 3.2, -82.5], look: [0, 2.4, -92], fov: 44 },
-  { T: 9, pos: [0, 2.8, -84.5], look: [0, 2.6, -92], fov: 42 },
-  // Individuals & contact — facing the final gate and the calm teal horizon beyond it.
-  { T: 9.3, pos: [0, 2.4, -104], look: [0, 2.6, -118], fov: 44 },
-  { T: 10, pos: [0, 2.3, -110.5], look: [0, 2.7, -130], fov: 46 },
+  { T: 8.5, pos: [0, 3.1, -80.8], look: [0, 2.55, -92], fov: 44 },
+  { T: 9, pos: [0, 2.8, -83.6], look: [0, 2.6, -92], fov: 42 },
+  // Individuals & contact — facing the final gate (seen whole) and the calm teal horizon beyond it; the camera
+  // eases closer as the leaves open.
+  { T: 9.3, pos: [0, 2.7, -99.5], look: [0, 3.2, -118], fov: 44 },
+  { T: 10, pos: [0, 2.6, -103.5], look: [0, 3.1, -126], fov: 46 },
 ];
 
 function lerpVec(a: Vec3, b: Vec3, t: number, out: Vec3): Vec3 {

@@ -1,0 +1,451 @@
+/* Request form (#contact). The horizon glows behind; text sits on solid glass for readability. */
+.contact__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(24px, 4vw, 64px);
+  align-items: start;
+}
+
+.contact__intro {
+  position: sticky;
+  top: calc(var(--nav-h) + 28px);
+  display: grid;
+  gap: var(--space-5);
+}
+.contact__head {
+  display: grid;
+  gap: var(--space-4);
+}
+.contact__head .lead {
+  font-size: var(--fs-md);
+  color: #c3ccd8;
+}
+
+/* Readability scrims: the horizon gate is brightest right behind the intro column. Soft-edged navy blocks
+   (two linear masks intersected) keep the copy legible while the light still reads around them. */
+.contact__head,
+.contact-real {
+  position: relative;
+  isolation: isolate;
+}
+.contact__head::before,
+.contact-real::before {
+  content: '';
+  position: absolute;
+  inset: -32px -72px;
+  z-index: -1;
+  background: rgba(7, 11, 20, 0.76);
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent, #000 88px, #000 calc(100% - 88px), transparent),
+    linear-gradient(180deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent, #000 88px, #000 calc(100% - 88px), transparent),
+    linear-gradient(180deg, transparent, #000 40px, #000 calc(100% - 40px), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+/* ---------- Current request ---------- */
+.contact-req {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-lg);
+  background: rgba(10, 16, 32, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.contact-req__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+.contact-req__title {
+  font-size: var(--fs-md);
+}
+.contact-req__edit {
+  min-height: 44px;
+  margin-inline-start: auto;
+}
+.contact-req__empty {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.contact-req__empty .btn {
+  min-height: 44px;
+}
+.contact-req__list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+}
+.contact-req__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--r-xs);
+  background: rgba(243, 246, 250, 0.03);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.contact-req__item svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--sg-teal);
+}
+.contact-req__item--pkg {
+  border: 1px solid var(--sg-teal-24);
+  background: var(--sg-teal-08);
+}
+.contact-req__tag {
+  margin-inline-end: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sg-teal);
+}
+html[lang='ar'] .contact-req__tag {
+  font-family: var(--font-ar);
+  font-size: var(--fs-xs);
+  letter-spacing: 0;
+}
+.contact-req__auth {
+  display: flex;
+  gap: 8px;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-muted);
+}
+.contact-req__auth svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--sg-teal);
+}
+
+.contact-real {
+  padding-inline-start: 4px;
+}
+.contact-real__title {
+  margin-block-end: 10px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .contact-real__title {
+  letter-spacing: 0;
+}
+.contact-real__list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+}
+.contact-real__list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.contact-real__list svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--sg-teal);
+}
+
+/* ---------- Form panel ---------- */
+.contact__panel {
+  position: relative;
+  padding: clamp(20px, 3vw, 36px);
+  border-color: var(--sg-line-strong);
+  background:
+    linear-gradient(180deg, rgba(20, 32, 53, 0.55), rgba(10, 16, 32, 0) 220px),
+    rgba(10, 16, 32, 0.92);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+.contact__panel::before {
+  content: '';
+  position: absolute;
+  inset-inline: 32px;
+  top: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sg-teal), transparent);
+  opacity: 0.7;
+}
+
+.contact-form {
+  display: grid;
+  gap: 20px;
+}
+.contact-form__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.contact-form__title {
+  font-size: var(--fs-xl);
+}
+.contact-form__legend {
+  margin-top: -12px;
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+.contact-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  align-items: start;
+}
+.contact-form__choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+html[dir='rtl'] .contact-form input[dir='ltr'] {
+  text-align: end;
+}
+
+/* Contact-method segmented control built from real radios */
+.contact-form__segmented {
+  display: flex;
+  width: 100%;
+}
+.contact-seg {
+  position: relative;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  padding: 0.4em 1em;
+  border-radius: var(--r-pill);
+  color: var(--sg-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-2),
+    color var(--dur-2);
+}
+.contact-seg:hover {
+  color: var(--sg-text);
+}
+.contact-seg input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.contact-seg:has(input:checked) {
+  background: var(--sg-teal);
+  color: var(--sg-on-teal);
+}
+.contact-seg:has(input:focus-visible) {
+  outline: 2px solid var(--sg-teal);
+  outline-offset: 3px;
+}
+
+.contact-form__msgmeta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.contact-form__count {
+  flex: none;
+  direction: ltr;
+}
+.contact-form__count[data-ok] {
+  color: var(--sg-teal);
+}
+
+.contact-form__auth,
+.contact-form__ack {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--sg-line-strong);
+  border-radius: var(--r-sm);
+  background: rgba(7, 11, 20, 0.55);
+}
+.contact-form__auth {
+  border-color: var(--sg-teal-40);
+  background: var(--sg-teal-08);
+}
+.contact-form__auth[data-invalid],
+.contact-form__ack[data-invalid] {
+  border-color: rgba(255, 138, 150, 0.6);
+}
+.contact-form__auth .check,
+.contact-form__ack .check {
+  color: var(--sg-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+.contact-form__auth-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-inline-end: 6px;
+  vertical-align: -3px;
+  color: var(--sg-teal);
+}
+.contact-form__auth .field__hint,
+.contact-form__auth .field__error,
+.contact-form__ack .field__error {
+  padding-inline-start: 30px;
+}
+
+.contact-form__submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  padding-top: 4px;
+}
+
+/* ---------- Confirmation ---------- */
+.contact-done {
+  display: grid;
+  gap: 18px;
+  outline: none;
+  animation: contact-done-in var(--dur-3) var(--ease-out);
+}
+.contact-done:focus-visible {
+  outline: 2px solid var(--sg-teal);
+  outline-offset: 8px;
+  border-radius: var(--r-sm);
+}
+@keyframes contact-done-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+.contact-done__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.contact-done__seal {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--sg-teal-14);
+  border: 1px solid var(--sg-teal-40);
+  box-shadow: var(--glow-teal);
+  color: var(--sg-teal);
+}
+.contact-done__seal svg {
+  width: 30px;
+  height: 30px;
+}
+.contact-done__seal[data-failed] {
+  background: rgba(255, 181, 71, 0.1);
+  border-color: rgba(255, 181, 71, 0.4);
+  box-shadow: none;
+  color: var(--sg-phishing);
+}
+.contact-done__title {
+  font-size: var(--fs-2xl);
+}
+.contact-done__note {
+  padding: 14px 16px;
+  border-inline-start: 3px solid var(--sg-teal);
+  border-radius: var(--r-xs);
+  background: var(--sg-teal-08);
+  font-size: var(--fs-lg);
+  font-weight: 650;
+  line-height: 1.5;
+}
+.contact-done__ref {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0;
+}
+.contact-done__ref dt {
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.contact-done__ref dd {
+  margin: 0;
+}
+.contact-done__ref code {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px dashed var(--sg-teal-40);
+  border-radius: var(--r-xs);
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  letter-spacing: 0.12em;
+  color: var(--sg-teal);
+  direction: ltr;
+}
+.contact-done__items {
+  display: grid;
+  gap: 10px;
+}
+.contact-done__label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sg-text-faint);
+}
+html[lang='ar'] .contact-done__label {
+  letter-spacing: 0;
+}
+.contact-done__meta {
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.contact-done__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--sg-line);
+}
+.contact-done__wipe {
+  min-height: 44px;
+  color: var(--sg-text-muted);
+}
+
+@media (max-width: 959.98px) {
+  .contact__grid {
+    grid-template-columns: 1fr;
+  }
+  .contact__intro {
+    position: static;
+  }
+}
+@media (max-width: 599.98px) {
+  .contact-form__row,
+  .contact-form__choices {
+    grid-template-columns: 1fr;
+  }
+  .contact-form__submit .btn {
+    width: 100%;
+  }
+  .contact-done__actions .btn {
+    flex: 1 1 100%;
+  }
+}

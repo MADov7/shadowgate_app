@@ -1,0 +1,197 @@
+/* Site footer — solid navy so the closing information is always readable. */
+.sg-footer {
+  position: relative;
+  z-index: var(--z-content);
+  overflow: hidden;
+  padding-block: clamp(3.5rem, 7vw, 6rem) 0;
+  border-block-start: 1px solid var(--sg-line);
+  background:
+    radial-gradient(900px 380px at 50% 100%, rgba(53, 242, 196, 0.1), transparent 70%),
+    linear-gradient(180deg, #070b14, #060910);
+  isolation: isolate;
+}
+
+/* Slow diagonal shaft of light behind the content (CSS only; frozen under reduced motion). */
+.sg-footer__beam {
+  position: absolute;
+  inset-block: -20%;
+  inset-inline-start: 20%;
+  z-index: -1;
+  width: 32%;
+  background: linear-gradient(90deg, transparent, rgba(53, 242, 196, 0.07) 45%, rgba(138, 247, 218, 0.1) 50%, rgba(53, 242, 196, 0.07) 55%, transparent);
+  filter: blur(24px);
+  transform: skewX(-24deg);
+  animation: sg-footer-beam 18s var(--ease-in-out) infinite alternate;
+  pointer-events: none;
+}
+@keyframes sg-footer-beam {
+  to {
+    translate: 90% 0;
+  }
+}
+html[dir='rtl'] .sg-footer__beam {
+  transform: skewX(24deg);
+}
+
+.sg-footer__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr) minmax(0, 0.9fr) minmax(0, 1.4fr);
+  gap: clamp(24px, 4vw, 56px);
+}
+.sg-footer__brand {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+.sg-footer__lockup .sg-lockup__mark {
+  width: 40px;
+  height: 40px;
+}
+.sg-footer__lockup .sg-lockup__word {
+  font-size: 1.1rem;
+}
+.sg-footer__lockup {
+  margin-block-end: 8px;
+}
+.sg-footer__slogan {
+  font-family: var(--font-sans);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--sg-text);
+}
+.sg-footer__slogan--ar {
+  font-family: var(--font-ar);
+  font-weight: 800;
+  color: var(--sg-teal);
+}
+html[dir='rtl'] .sg-footer__slogan[dir='ltr'] {
+  text-align: end;
+}
+html[dir='ltr'] .sg-footer__slogan[dir='rtl'] {
+  text-align: end;
+  justify-self: start;
+}
+
+.sg-footer__label {
+  margin-block-end: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sg-teal);
+}
+html[lang='ar'] .sg-footer__label {
+  font-family: var(--font-ar);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.sg-footer__links {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+.sg-footer__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding-block: 4px;
+  color: var(--sg-text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--dur-2);
+}
+.sg-footer__links a:hover {
+  color: var(--sg-teal);
+}
+
+.sg-footer__disclaimer {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--sg-line);
+  border-radius: var(--r-md);
+  background: rgba(243, 246, 250, 0.025);
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.sg-footer__disclaimer .sg-footer__label {
+  margin: 0;
+  color: var(--sg-phishing);
+}
+.sg-footer__inspo {
+  padding-top: 10px;
+  border-top: 1px solid var(--sg-line);
+  font-size: var(--fs-xs);
+  color: var(--sg-text-faint);
+}
+
+.sg-footer__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-block: 20px;
+  border-block-start: 1px solid var(--sg-line);
+}
+.sg-footer__copy {
+  font-size: var(--fs-sm);
+  color: var(--sg-text-muted);
+}
+.sg-footer__tele {
+  direction: ltr;
+}
+.sg-footer__top svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Giant wordmark cropped by the bottom edge */
+.sg-footer__word {
+  position: relative;
+  z-index: -1;
+  margin-top: -0.12em;
+  margin-bottom: -0.3em;
+  font-family: var(--font-sans);
+  font-size: clamp(3.5rem, 15vw, 15rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: nowrap;
+  direction: ltr;
+  color: transparent;
+  background: linear-gradient(180deg, rgba(53, 242, 196, 0.22), rgba(53, 242, 196, 0.02) 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 1px rgba(53, 242, 196, 0.18);
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (max-width: 1023.98px) {
+  .sg-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sg-footer__brand,
+  .sg-footer__disclaimer {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 519.98px) {
+  .sg-footer__bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sg-footer__top {
+    width: 100%;
+  }
+  .sg-footer__links a {
+    min-height: 44px;
+  }
+}

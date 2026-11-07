@@ -1,5 +1,26 @@
 import type { constellationEn } from '../en/constellation';
 
 export const constellationAr: Record<keyof typeof constellationEn, string> = {
-  title: 'Constellation',
+  eyebrow: 'SG//EXPLORE · كوكبة الخدمات',
+  title: 'استكشف ما يمكننا مساعدتك فيه',
+  lead: 'ثماني خدمات للشركات، لكلٍّ منها نطاق واضح ومخرجات عملية ومدة تقديرية.',
+  telemetry: 'الخدمة {n} / {total}',
+  counterLabel: 'الخدمة {n} من {total}',
+  hintScroll: 'مرّر للاستكشاف',
+  hintDrag: 'اسحب للتدوير',
+  hintClick: 'انقر للفتح',
+  hintTap: 'المس للفتح',
+  hintKeys: 'تُدير مفاتيح الأسهم العرض عند التركيز على إحدى الخدمات.',
+  hotspotLabel: 'عرض التفاصيل: {name}',
+  hotspotOpen: 'فتح',
+  objectsLabel: 'مجسّمات الخدمات',
+  indexLabel: 'فهرس الخدمات',
+  dotLabel: 'انتقل إلى الخدمة {n}: {name}',
+  announce: 'الخدمة {n} من {total}: {name}',
+  includedInPackage: 'مشمولة في باقتك',
+  durationShort: 'المدة',
+  pricingShort: 'التسعير',
+  audienceShort: 'لمن',
+  staticLead: 'جميع خدمات الشركات الثماني في لمحة واحدة. افتح أي خدمة لمعرفة نطاقها ومخرجاتها ومدتها التقديرية.',
+  gridLabel: 'خدمات الشركات',
 };

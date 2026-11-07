@@ -83,3 +83,14 @@ export const useRadar = create<RadarState>((set, get) => ({
 export function visibleEvents(state: Pick<RadarState, 'events' | 'filters'>): ThreatEvent[] {
   return state.events.filter((e) => state.filters[e.category]);
 }
+
+/** The currently selected event (null if none or if it left the buffer). */
+export function selectedEvent(state: Pick<RadarState, 'events' | 'selectedId'>): ThreatEvent | null {
+  if (state.selectedId === null) return null;
+  return state.events.find((e) => e.id === state.selectedId) ?? null;
+}
+
+/** Sum of all simulated events since the page loaded. */
+export function totalCount(state: Pick<RadarState, 'totals'>): number {
+  return state.totals.phishing + state.totals.login + state.totals.scanning + state.totals.traffic;
+}

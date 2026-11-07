@@ -1,4 +1,25 @@
-// OWNER: builder agent for the 'personal' area. Replace these placeholder keys freely; keep ar/personal.ts in sync.
+// OWNER: conversion agent — Scene F "Individuals". Keep ar/personal.ts in sync.
 export const personalEn = {
-  title: 'Personal',
+  eyebrow: 'SG//INDIVIDUALS',
+  title: 'Security help for you and your family',
+  lead: 'Friendly, guided sessions for the accounts, devices and privacy settings you use every day. No jargon and no pressure — we explain each step, and you stay in control.',
+  listLabel: 'Personal services',
+  counter: '{index} / {total}',
+  priceLabel: 'Illustrative classwork price',
+  bookFor: 'Book a consultation for {name}',
+  addFor: 'Add {name} to request',
+  inRequestFor: '{name} is in your request',
+  detailsFor: 'View details for {name}',
+  reassureTitle: 'What to expect',
+  reassure1Title: 'Guided, step by step',
+  reassure1Body: 'We walk through each setting with you and explain why it matters, at your pace.',
+  reassure2Title: 'Your devices stay yours',
+  reassure2Body: 'We never access your devices or accounts without you present and agreeing.',
+  reassure3Title: 'Nothing is scanned remotely',
+  reassure3Body: 'This site does not scan your phone, computer or home network — not now, not ever.',
+  flowTitle: 'How a session works',
+  flow1: 'Choose a session and a time',
+  flow2: 'Meet online or in person',
+  flow3: 'Leave with clear next steps',
+  flowNote: 'Booking here is a classwork demo — it is saved only in your browser.',
 } as const;
