@@ -2,51 +2,90 @@
 
 > *Your gateway to a safer digital world.* · *حمايتك تبدأ من هنا*
 
-A cinematic, scroll-driven storefront for a (fictional, classwork) cybersecurity company. Visitors enter through a 3D
-gateway, travel through a simulated threat radar, a company network that gains protection layers, and a constellation of
-services — then choose services in an accessible catalog, compare packages, build a request and submit a demo form.
-Businesses are the primary audience; individuals the secondary one. English and Arabic (RTL) are fully supported.
+A cinematic, scroll-driven storefront for a (fictional, classwork) cybersecurity company, in English and Arabic (RTL).
+Visitors travel through a 3D gateway, a threat radar and a service constellation, then shop in a real store:
+products from **MongoDB Atlas**, accounts with a signed **HttpOnly session cookie**, protected **My Orders**, and
+online payment with **Stripe Checkout in test mode**.
 
-**Status:** classwork demo. No backend — see [docs/DEMO_VS_BACKEND.md](docs/DEMO_VS_BACKEND.md).
+**Live:** https://shadow-gate-storefront.netlify.app · **Author:** Soud Alkaban
 
-## Run it on Replit
+## Stack
 
-1. Create a Repl → **Import** → upload this ZIP (or create a Node.js Repl and drag the extracted files in).
-2. Press **Run**. The included `.replit` runs `npm run replit`: installs dependencies, builds the site and serves it on
-   port 5000 (Replit shows it in the Webview).
-3. To publish: **Deploy → Static**. The deployment builds with `npm run build:web` and serves the `dist/` folder.
+| Layer | What |
+|---|---|
+| App | Next.js 16 (App Router) + React 19, Tailwind v4, three.js / R3F for the experience |
+| Data | MongoDB Atlas via Mongoose — `products`, `users`, `orders` |
+| Auth | bcrypt password hashes, JWT in an HttpOnly `SameSite=Lax` cookie, server-side checks on every protected page/API |
+| Payments (Day 5) | Stripe Checkout, **test mode only** — server route creates the session, webhook saves paid orders |
+| Hosting | Netlify (Next.js runtime). Builds also work on Vercel unchanged |
+
+## Day 5 — payments (Stripe test mode)
+
+How the class brief maps onto this project (no Supabase / Replit here):
+
+| Brief | Shadow Gate |
+|---|---|
+| Supabase Edge Function starts the payment | `POST /api/checkout` (Next.js server route) — needs a login, prices read from MongoDB |
+| Stripe secret key in Supabase Secrets | `STRIPE_SECRET_KEY` in server env only (`.env.local` / Netlify env vars) — never in the browser |
+| Save the order in the `orders` table after payment | MongoDB `orders` collection: saved with `status: "paid"` only after Stripe confirms the session |
+| Show "Paid ✓" without reloading | `/checkout/success` confirms with `POST /api/checkout/confirm` from the page and shows **تم الدفع ✓ / Payment successful ✓** |
+
+Flow: **Cart → Pay now → Stripe Checkout (test) → /checkout/success (order saved as Paid) → My Orders**.
+Cancelling on Stripe returns to `/checkout/cancel` (nothing charged, nothing saved).
+
+- Only fixed-price services are paid online; quote-based services stay a quote request (Stripe cannot charge 0).
+- The browser sends slugs + quantities only. Amounts, currency, user id and the paid lines are written by the
+  server into the Checkout Session; after payment the server checks Stripe's `amount_total` against them.
+- `POST /api/stripe/webhook` (bonus) verifies the `Stripe-Signature` HMAC over the raw body (400 if invalid) and saves
+  the paid order too. `stripeSessionId` is unique, so the webhook and the success page never create two orders.
+- Live keys (`sk_live_…`) are refused — classwork runs in test mode only.
+- No `stripe` npm package: the server calls Stripe's REST API with `fetch` and verifies webhooks with `node:crypto`.
+
+Test card: `4242 4242 4242 4242`, any future expiry, any CVC.
 
 ## Run it locally
 
-Requirements: Node.js 20.19+ (built and tested with Node 24) and npm.
+Requirements: Node.js 20.19+ (tested with Node 24) and npm.
 
 ```bash
 npm install
+```
+
+Copy `.env.example` to `.env.local` and fill in the values (never commit it — `.env*` is git-ignored):
+
+| Variable | Used for |
+|---|---|
+| `MONGODB_URI` | MongoDB Atlas connection string (server only) |
+| `JWT_SECRET` | Signs the session cookie (server only) |
+| `STRIPE_SECRET_KEY` | Stripe **test** secret key `sk_test_…` (server only) |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret `whsec_…` of the `/api/stripe/webhook` endpoint (server only) |
+
+```bash
+npm run seed
 ```
 
 ```bash
 npm run dev
 ```
 
-Open the printed URL (default http://localhost:5173).
-
-```bash
-npm run build
-```
-
-```bash
-npm run preview
-```
+Open http://localhost:3190.
 
 | Script | Purpose |
 |---|---|
-| `npm run dev` | Vite dev server with HMR |
-| `npm run build` | Type-check (`tsc -b`) + production build to `dist/` |
-| `npm run preview` | Serve the production build on port 4173 |
-| `npm test` | Unit tests (Vitest): search, quiz scoring, validation, threat simulation, data & i18n completeness |
-| `npm run test:e2e` | End-to-end tests (Playwright, desktop + mobile, against the production build — run `npm run build` first) |
-| `npm run landmask` | Regenerates the globe land mask from Natural Earth data (only needed if you change resolution) |
-| `npm run shot -- --url … --at <section>` | Screenshot helper used for visual QA |
+| `npm run dev` | Next.js dev server (port 3190) |
+| `npm run build` / `npm start` | Production build / serve it (port 4190) |
+| `npm run seed` | Upserts the 12 services into MongoDB |
+| `npm test` | Unit tests (Vitest): validation, sessions, Stripe signature/metadata/fulfilment rules, i18n parity… |
+| `npm run test:e2e` | End-to-end tests (Playwright, desktop + mobile) against the production build |
+| `npm run db:report -- --html` | Read-only report of the live collections |
+
+## Deploy
+
+Netlify builds from this repository (`netlify.toml`: `npm run build:netlify`). Set the four variables above in
+**Site configuration → Environment variables**. In Stripe (test mode) add a webhook endpoint
+`https://<site>/api/stripe/webhook` for `checkout.session.completed` and put its signing secret in
+`STRIPE_WEBHOOK_SECRET`.
+
 
 ## Useful URL switches (testing & review)
 
