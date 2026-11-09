@@ -327,4 +327,3 @@ export function disposeAudio(): void {
   noiseBuffer = null;
 }
 
-if (import.meta.hot) import.meta.hot.dispose(() => disposeAudio());

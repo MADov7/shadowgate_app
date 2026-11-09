@@ -1,5 +1,6 @@
 // One service in the catalog grid: pointer-spotlight glass card with honest meta (estimate, pricing kind)
 // and the service's primary action. State is always shown with icon + text, never colour alone.
+import Link from 'next/link';
 import { Check, Clock, Eye, ShieldCheck, Tag, UserRound } from 'lucide-react';
 import type { Service } from '../../data/types';
 import { categoryById } from '../../data/categories';
@@ -13,9 +14,11 @@ interface ServiceCardProps {
   service: Service;
   /** 1-based catalog index for the telemetry code ("SVC-03"). */
   index: number;
+  /** Store pages: "View details" opens this product page instead of the details dialog. */
+  detailsHref?: string;
 }
 
-export function ServiceCard({ service, index }: ServiceCardProps) {
+export function ServiceCard({ service, index, detailsHref }: ServiceCardProps) {
   const { t, loc } = useI18n();
   const pricing = usePricingText(service.pricing);
   const { state, packageId } = useRequestState(service.id);
@@ -25,6 +28,24 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
 
   const openDetails = () => useUI.getState().openDetails(service.id);
   const code = t('catalog.cardCode', { n: String(index).padStart(2, '0') });
+
+  const detailsInner = (
+    <>
+      <Eye aria-hidden="true" />
+      <span>{t('common.viewDetails')}</span>
+      <span className="sr-only">{t('catalog.detailsSuffix', { name: loc(service.name) })}</span>
+    </>
+  );
+  const detailsAction = (className: string) =>
+    detailsHref ? (
+      <Link className={className} href={detailsHref}>
+        {detailsInner}
+      </Link>
+    ) : (
+      <button type="button" className={className} onClick={openDetails}>
+        {detailsInner}
+      </button>
+    );
 
   return (
     <article className="card cat-card" aria-labelledby={titleId} data-state={state} onPointerMove={trackSpotlight}>
@@ -93,20 +114,12 @@ export function ServiceCard({ service, index }: ServiceCardProps) {
         {personal ? (
           <>
             <PrimaryActionButton service={service} className="cat-card__primary" withName />
-            <button type="button" className="btn btn--secondary btn--sm" onClick={openDetails}>
-              <Eye aria-hidden="true" />
-              <span>{t('common.viewDetails')}</span>
-              <span className="sr-only">{t('catalog.detailsSuffix', { name: loc(service.name) })}</span>
-            </button>
+            {detailsAction('btn btn--secondary btn--sm')}
             <AddToRequestButton service={service} size="sm" variant="secondary" withName />
           </>
         ) : (
           <>
-            <button type="button" className="btn btn--secondary" onClick={openDetails}>
-              <Eye aria-hidden="true" />
-              <span>{t('common.viewDetails')}</span>
-              <span className="sr-only">{t('catalog.detailsSuffix', { name: loc(service.name) })}</span>
-            </button>
+            {detailsAction('btn btn--secondary')}
             <PrimaryActionButton service={service} className="cat-card__primary" withName />
           </>
         )}

@@ -15,3 +15,10 @@ dist-artifact
 .netlify
 ad-package/render/work/
 ad-package/render/*.mp4
+
+# Next.js
+.next/
+next-env.d.ts
+*.tsbuildinfo
+db-report.html
+demo-accounts.local.txt

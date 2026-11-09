@@ -3,15 +3,27 @@
   "configurations": [
     {
       "name": "shadow-gate-dev",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "5173", "--strictPort"],
-      "port": 5173
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/GAMING/ShadowGate-Storefront/node_modules/next/dist/bin/next",
+        "dev",
+        "C:/Users/GAMING/ShadowGate-Storefront",
+        "-p",
+        "3190"
+      ],
+      "port": 3190
     },
     {
       "name": "shadow-gate-preview",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "preview", "--port", "4173", "--strictPort"],
-      "port": 4173
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "C:/Users/GAMING/ShadowGate-Storefront/node_modules/next/dist/bin/next",
+        "start",
+        "C:/Users/GAMING/ShadowGate-Storefront",
+        "-p",
+        "4190"
+      ],
+      "port": 4190
     }
   ]
 }

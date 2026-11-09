@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-// End-to-end checks run against the production build (`npm run build` first).
+// End-to-end checks run against the Next.js production server (`npm run build` first).
 // WebGL runs on SwiftShader in headless Chromium so the cinematic mode is exercised too.
 const PORT = 4199;
 
@@ -23,7 +23,7 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
   webServer: {
-    command: `node node_modules/vite/bin/vite.js preview --port ${PORT} --strictPort`,
+    command: `node node_modules/next/dist/bin/next start -p ${PORT}`,
     port: PORT,
     reuseExistingServer: true,
     timeout: 60_000,

@@ -14,7 +14,8 @@ function collectErrors(page: Page): string[] {
 test('welcome gate: direct-services link bypasses the entrance and is remembered for the session', async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto('/?intro=1');
-  await expect(page.getByRole('button', { name: /enter shadow gate/i })).toBeVisible();
+  // Home reads the catalog from MongoDB Atlas on every request, so allow a little longer for the first paint.
+  await expect(page.getByRole('button', { name: /enter shadow gate/i })).toBeVisible({ timeout: 20_000 });
   await page.getByRole('link', { name: /go directly to services/i }).or(page.getByRole('button', { name: /go directly to services/i })).first().click();
   await expect(page.locator('#catalog')).toBeInViewport({ timeout: 10_000 });
   expect(await page.evaluate(() => sessionStorage.getItem('sg-entered'))).toBe('1');
@@ -41,7 +42,8 @@ test('catalog: audience switch, search with result count, empty state and clear'
   await search.press('Escape');
   await expect(search).toHaveValue('');
   await catalog.getByRole('button', { name: /^personal/i }).first().click();
-  await expect(catalog.getByRole('heading', { name: /personal account protection/i })).toBeVisible();
+  // The results grid (the Featured services block above it can show the same service).
+  await expect(catalog.locator('#catalog-results').getByRole('heading', { name: /personal account protection/i })).toBeVisible();
 });
 
 test('basket: add a service, badge updates, persists after reload, no duplicates', async ({ page }) => {
@@ -90,7 +92,11 @@ test('request form: field errors, then the honest demo confirmation', async ({ p
 
 test('language toggle switches to Arabic with RTL layout', async ({ page }) => {
   await page.goto('/?intro=0');
-  await page.getByRole('button', { name: /switch language to arabic/i }).first().click();
+  await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible({ timeout: 15_000 });
+  const toggle = page.getByRole('button', { name: /switch language to arabic/i }).first();
+  // On phones the language switch lives inside the navigation menu.
+  if (!(await toggle.isVisible())) await page.getByRole('button', { name: /open menu/i }).click();
+  await toggle.click();
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.getByRole('heading', { level: 1 })).not.toHaveText(/your business/i);

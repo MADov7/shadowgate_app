@@ -1,7 +1,8 @@
 // SERVICE CATALOG (#catalog) — the main functional storefront, normal scrolling.
 // Filters live in the shared useCatalog store so nav links, the quiz and the constellation can preset them.
 import { useEffect, useMemo, useState } from 'react';
-import { ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight, ShoppingBag } from 'lucide-react';
 import type { Audience, CategoryId, Service } from '../../data/types';
 import { SERVICES, servicesFor } from '../../data/services';
 import { categoriesFor } from '../../data/categories';
@@ -15,10 +16,23 @@ import { AudienceSwitch, CategoryChips } from './CatalogFilters';
 import { SearchBox } from './SearchBox';
 import { ServiceCard } from './ServiceCard';
 import { CatalogEmpty } from './CatalogEmpty';
+import { FeaturedServices } from './FeaturedServices';
 import './Catalog.css';
 
+export interface CatalogProps {
+  /** Store pages: product details open as a page (e.g. /products/website-assessment) instead of the dialog. */
+  detailsHref?: (id: Service['id']) => string;
+  /** Store pages: the basket button links to the cart page instead of opening the drawer. */
+  cartHref?: string;
+  /** Heading level of the catalog title (h1 on the Products page, h2 inside the home experience). */
+  titleAs?: 'h1' | 'h2';
+  /** Home: show the Featured services block above the full catalog. */
+  showFeatured?: boolean;
+  /** Home: link to the full store page. */
+  storeHref?: string;
+}
+
 const SUGGESTION_KEYS: TKey[] = ['catalog.suggest1', 'catalog.suggest2', 'catalog.suggest3', 'catalog.suggest4'];
-const CATALOG_INDEX = new Map(SERVICES.map((s, i) => [s.id, i + 1]));
 
 /** Announces after typing settles, so screen readers are not flooded on every keystroke. */
 function useSettled<T>(value: T, delay = 450): T {
@@ -30,7 +44,7 @@ function useSettled<T>(value: T, delay = 450): T {
   return settled;
 }
 
-export function Catalog() {
+export function Catalog({ detailsHref, cartHref, titleAs: Title = 'h2', showFeatured = false, storeHref }: CatalogProps = {}) {
   const { t, lang } = useI18n();
   const audience = useCatalog((s) => s.audience);
   const category = useCatalog((s) => s.category);
@@ -39,6 +53,8 @@ export function Catalog() {
   const setCategory = useCatalog((s) => s.setCategory);
   const setQuery = useCatalog((s) => s.setQuery);
   const basketCount = useBasketCount();
+  // Telemetry codes (SVC-01…) follow the database display order.
+  const catalogIndex = useMemo(() => new Map(SERVICES.map((s, i) => [s.id, i + 1])), []);
 
   const searching = queryHasTokens(query);
   const otherAudience: Audience = audience === 'business' ? 'personal' : 'business';
@@ -100,11 +116,21 @@ export function Catalog() {
               {t('catalog.telemetry', { count: SERVICES.length })}
             </span>
           </div>
-          <h2 id="catalog-title" className="h2">
+          <Title id="catalog-title" className="h2">
             {t('catalog.title')}
-          </h2>
+          </Title>
           <p className="lead">{t('catalog.lead')}</p>
+          {storeHref ? (
+            <p className="cat-head__store">
+              <Link className="btn btn--link" href={storeHref}>
+                {t('shop.storeLink')}
+                <ArrowRight className="icon-flip" aria-hidden="true" />
+              </Link>
+            </p>
+          ) : null}
         </header>
+
+        {showFeatured ? <FeaturedServices detailsHref={detailsHref ?? ((id) => `/products/${id}`)} /> : null}
 
         <div className="cat-toolbar panel" role="search" aria-label={t('catalog.toolbarLabel')}>
           <div className="cat-toolbar__row">
@@ -137,10 +163,17 @@ export function Catalog() {
               </button>
             </p>
           ) : null}
-          <button type="button" className="btn btn--secondary btn--sm cat-resultbar__basket" onClick={() => useUI.getState().openBasket()}>
-            <ShoppingBag aria-hidden="true" />
-            {basketCount > 0 ? t('catalog.viewRequestCount', { count: basketCount }) : t('catalog.viewRequest')}
-          </button>
+          {cartHref ? (
+            <Link className="btn btn--secondary btn--sm cat-resultbar__basket" href={cartHref}>
+              <ShoppingBag aria-hidden="true" />
+              {basketCount > 0 ? t('catalog.viewRequestCount', { count: basketCount }) : t('catalog.viewRequest')}
+            </Link>
+          ) : (
+            <button type="button" className="btn btn--secondary btn--sm cat-resultbar__basket" onClick={() => useUI.getState().openBasket()}>
+              <ShoppingBag aria-hidden="true" />
+              {basketCount > 0 ? t('catalog.viewRequestCount', { count: basketCount }) : t('catalog.viewRequest')}
+            </button>
+          )}
         </div>
         <p className="sr-only" aria-live="polite" aria-atomic="true">
           {announcement}
@@ -151,7 +184,7 @@ export function Catalog() {
             <ul className="cat-grid">
               {results.map((service) => (
                 <li key={service.id} className="cat-grid__item">
-                  <ServiceCard service={service} index={CATALOG_INDEX.get(service.id) ?? 0} />
+                  <ServiceCard service={service} index={catalogIndex.get(service.id) ?? 0} detailsHref={detailsHref?.(service.id)} />
                 </li>
               ))}
             </ul>

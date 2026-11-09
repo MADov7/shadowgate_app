@@ -1,7 +1,7 @@
 // SERVICE DETAILS (mounted once in App; open while useUI.detailsId != null).
 // Everything a buyer needs before choosing: scope, exclusions, deliverables, estimate, honest pricing,
 // authorization requirement (pen testing) and package coverage. Built on the shared native <dialog>.
-import { useRef } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Clock, Info, PackageCheck, ShieldCheck, Tag } from 'lucide-react';
 import { Dialog, DialogClose } from '../components/ui/Dialog';
 import { ServiceIcon } from '../components/ui/ServiceIcon';
@@ -19,8 +19,20 @@ function filled(list: readonly string[]): string[] {
   return list.map((s) => s.trim()).filter(Boolean);
 }
 
-function DetailsBody({ service, onClose }: { service: Service; onClose: () => void }) {
+interface DetailsBodyProps {
+  service: Service;
+  /** Dialog only: closes the dialog. Product pages pass nothing (no close buttons). */
+  onClose?: () => void;
+  /** Product details page: the service name becomes the page's h1. */
+  asPage?: boolean;
+  /** Extra footer actions (e.g. "Go to cart" on the product page). */
+  footerExtra?: ReactNode;
+}
+
+/** Service details content — shared by the details dialog (home) and the /products/[slug] page. */
+export function ServiceDetailsContent({ service, onClose, asPage = false, footerExtra }: DetailsBodyProps) {
   const { t, loc, locList } = useI18n();
+  const Title = asPage ? 'h1' : 'h2';
   const pricing = usePricingText(service.pricing);
   const { state, packageId } = useRequestState(service.id);
   const category = categoryById(service.category);
@@ -51,12 +63,12 @@ function DetailsBody({ service, onClose }: { service: Service; onClose: () => vo
                 </span>
               ) : null}
             </div>
-            <h2 id="details-title" className="sd-title">
+            <Title id="details-title" className="sd-title">
               {loc(service.name)}
-            </h2>
+            </Title>
           </div>
         </div>
-        <DialogClose onClick={onClose} />
+        {onClose ? <DialogClose onClick={onClose} /> : null}
       </header>
 
       <div className="sg-dialog__body sd-body">
@@ -168,9 +180,12 @@ function DetailsBody({ service, onClose }: { service: Service; onClose: () => vo
       </div>
 
       <footer className="sg-dialog__foot sd-foot">
-        <button type="button" className="btn btn--ghost sd-foot__close" onClick={onClose}>
-          {t('common.close')}
-        </button>
+        {onClose ? (
+          <button type="button" className="btn btn--ghost sd-foot__close" onClick={onClose}>
+            {t('common.close')}
+          </button>
+        ) : null}
+        {footerExtra}
         {isBook ? <AddToRequestButton service={service} variant="secondary" verbose /> : null}
         <PrimaryActionButton service={service} verbose />
       </footer>
@@ -195,7 +210,7 @@ export function ServiceDetailsDialog() {
       describedBy="details-benefit"
       className="sd-dialog"
     >
-      {service ? <DetailsBody service={service} onClose={closeDetails} /> : null}
+      {service ? <ServiceDetailsContent service={service} onClose={closeDetails} /> : null}
     </Dialog>
   );
 }

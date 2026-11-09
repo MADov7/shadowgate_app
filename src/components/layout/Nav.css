@@ -185,7 +185,11 @@ html[lang='ar'] .sg-lang {
   border-top: 1px solid var(--sg-line);
 }
 
-@media (max-width: 1360px) {
+/* Breakpoints widened on Day 4: the nav also carries the Store link and the account control. */
+@media (max-width: 1600px) {
+  .sg-nav__progress {
+    display: none;
+  }
   .sg-nav__cta-long {
     display: none;
   }
@@ -196,7 +200,7 @@ html[lang='ar'] .sg-lang {
     padding: 0 10px;
   }
 }
-@media (max-width: 1180px) {
+@media (max-width: 1320px) {
   .sg-nav__links,
   .sg-nav__settings,
   .sg-nav__progress {

@@ -1,6 +1,7 @@
 // Persistent, lightweight navigation: floating brand + link pill + actions (language, motion, sound, basket, CTA).
 // Keyboard: all links/buttons are native; the mobile menu is a disclosure that closes on Escape / link click.
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Menu, ShoppingBag, X, Gauge } from 'lucide-react';
 import { LogoLockup } from '../../brand/Logo';
 import { useI18n, useLangStore, type TKey } from '../../i18n';
@@ -11,6 +12,7 @@ import { useExperience } from '../../state/experience';
 import { scrollToId } from '../../lib/smoothScroll';
 import { SECTION_IDS } from '../../lib/choreo';
 import { SoundToggle } from '../../sections/Welcome/SoundToggle';
+import { AccountControl } from './AccountControl';
 import './Nav.css';
 
 interface NavLink {
@@ -196,6 +198,7 @@ export function Nav() {
           <MotionToggle />
           <SoundToggle compact />
         </div>
+        <AccountControl />
         <BasketButton />
         <a
           className="btn btn--primary sg-nav__cta"
@@ -227,7 +230,14 @@ export function Nav() {
               </a>
             </li>
           ))}
+          <li>
+            <Link href="/products">{t('shop.navStore')}</Link>
+          </li>
+          <li>
+            <Link href="/cart">{t('shop.navCart')}</Link>
+          </li>
         </ul>
+        <AccountControl variant="menu" onNavigate={() => setMenuOpen(false)} />
         <div className="sg-nav__mobile-settings" aria-label={t('nav.settings')} role="group">
           <LangToggle />
           <MotionToggle />

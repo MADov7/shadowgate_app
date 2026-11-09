@@ -1,18 +1,22 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
+    // Same '@/…' path alias as the Next.js tsconfig (used by lib/* and its unit tests).
+    alias: { '@': fileURLToPath(new URL('./', import.meta.url)) },
     dedupe: ['react', 'react-dom', 'three'],
   },
-  // Hosted previews (e.g. Replit's *.replit.dev domains) must be allowed to reach the dev/preview server.
+  // Vite now only serves the ad renderer (ad.html → npm run ad:dev) and runs the unit tests; the site uses Next.js.
   server: { host: true, allowedHosts: true },
   preview: { host: true, allowedHosts: true },
   // Pre-bundle every runtime dependency up front so the dev server never re-optimizes mid-session
   // (a mid-session re-optimization can load two React copies → "Invalid hook call").
   optimizeDeps: {
+    entries: ['ad.html'],
     include: [
       'react',
       'react-dom',
@@ -46,6 +50,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'lib/**/*.test.ts'],
+    setupFiles: ['src/test/setup-catalog.ts'],
   },
 });

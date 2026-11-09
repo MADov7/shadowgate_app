@@ -5,5 +5,9 @@ import '@fontsource/tajawal/800.css';
 import '@fontsource-variable/jetbrains-mono';
 import './ad.css';
 import { AdApp } from './AdApp';
+import { registerServices } from '../data/services';
+import { SEED_SERVICES } from '../../scripts/seed/catalog-data';
+
+registerServices(SEED_SERVICES);
 
 createRoot(document.getElementById('ad-root')!).render(<AdApp />);

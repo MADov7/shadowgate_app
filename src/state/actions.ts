@@ -15,7 +15,7 @@ function packageName(id: PackageId): string {
 }
 function snapshot(): BasketSnapshot {
   const s = useBasket.getState();
-  return { serviceIds: [...s.serviceIds], packageId: s.packageId };
+  return { serviceIds: [...s.serviceIds], packageId: s.packageId, quantities: { ...s.quantities } };
 }
 
 export function addServiceToRequest(id: ServiceId): AddResult {

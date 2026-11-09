@@ -82,6 +82,10 @@ export interface Service {
   requiresAuthorization?: boolean;
   /** Protection layer this service maps to in the Defense Layers scene. */
   layer?: LayerId;
+  /** Highlighted in the Featured services block on Home. */
+  featured?: boolean;
+  /** Product image path (served from /public). */
+  image?: string;
 }
 
 export interface ServicePackage {

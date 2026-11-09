@@ -15,6 +15,7 @@ import { canvasOpacityAt } from '../lib/choreo';
 import { COLORS } from '../brand/brand';
 import { World } from './World';
 import { QA_ENTRY, QA_T } from './core/qa';
+import { IS_DEV } from '../lib/env';
 import './Stage.css';
 
 const DPR = { high: [1, 1.5], medium: [1, 1.25], low: [1, 1] } as const;
@@ -87,7 +88,7 @@ export default function Stage() {
 
   // Dev-only inspection hook (frame-time probes, shader-program counts, context-loss drills).
   useEffect(() => {
-    if (!import.meta.env.DEV || !gl) return;
+    if (!IS_DEV || !gl) return;
     const w = window as unknown as Record<string, unknown>;
     w.__sg3d = {
       gl,

@@ -82,7 +82,7 @@ export default function App() {
         <Layers />
         <Simulation />
         <Constellation />
-        <Catalog />
+        <Catalog showFeatured storeHref="/products" />
         <Quiz />
         <Packages />
         <Build />

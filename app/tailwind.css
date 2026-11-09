@@ -1,0 +1,38 @@
+/*
+ * Tailwind CSS v4 for the Next.js pages, added without changing Shadow Gate's look:
+ *  - No Preflight (Tailwind's global reset) — Shadow Gate's own base.css stays the reset.
+ *  - Utilities are generated only from the new Next.js folders (app/, components/), so class names that already
+ *    exist in the original experience (src/) can never pick up Tailwind styles by accident.
+ *  - Brand tokens are exposed as Tailwind colours, e.g. bg-sg-navy, text-sg-teal, border-sg-line.
+ * Tailwind sits in cascade layers, so Shadow Gate's unlayered base.css wins where both style the same element
+ * property (h1–h4, p, a, button, lists). New pages use base.css primitives (.btn, .card, .container, .chip …)
+ * for components and Tailwind mainly for layout (grid, flex, gap, spacing, responsive breakpoints).
+ */
+@layer theme, base, components, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+
+@source '../app';
+@source '../components';
+
+@theme {
+  --color-sg-navy: #070b14;
+  --color-sg-teal: #35f2c4;
+  --color-sg-teal-soft: #8af7da;
+  --color-sg-white: #f3f6fa;
+  --color-sg-muted: #a9b4c4;
+  --color-sg-faint: #8592a5;
+  --color-sg-threat: #ff4d5e;
+  --color-sg-line: rgba(243, 246, 250, 0.08);
+  --color-sg-line-strong: rgba(243, 246, 250, 0.16);
+  --color-sg-glass: rgba(10, 16, 32, 0.62);
+  --color-sg-glass-strong: rgba(10, 16, 32, 0.86);
+}
+
+/* Shown for the split second before the client-only experience mounts. */
+.sg-boot {
+  position: fixed;
+  inset: 0;
+  background: var(--sg-navy, #070b14);
+}

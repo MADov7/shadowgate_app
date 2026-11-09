@@ -21,6 +21,7 @@ import { scrollState } from '../state/scroll';
 import { canvasOpacityAt } from '../lib/choreo';
 import type { Quality } from '../lib/capabilities';
 import { QA_QUALITY_FORCED } from './core/qa';
+import { IS_DEV } from '../lib/env';
 import { compileWorld, createWarmTarget, uploadWorld } from './core/warmup';
 
 const STEP_DOWN = { high: 'medium', medium: 'low', low: 'low' } as const;
@@ -73,7 +74,7 @@ function finishWarm(w: WarmState, programs: number, quality: Quality): void {
   w.phase = 'done';
   warmState.busy = false;
   warmState.doneAt = performance.now();
-  if (import.meta.env.DEV) {
+  if (IS_DEV) {
     const ms = (warmState.doneAt - w.t0).toFixed(0);
     console.info(`[world] warm-up (${quality}): ${programs - w.programs0} programs compiled in ${ms} ms`);
   }

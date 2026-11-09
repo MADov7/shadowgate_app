@@ -16,11 +16,16 @@ export function trackSpotlight(event: { currentTarget: HTMLElement; clientX: num
   el.style.setProperty('--my', `${event.clientY - rect.top}px`);
 }
 
+/**
+ * "$49" in both languages, the same rule as formatAmount in src/lib/requests.ts: the Arabic ICU pattern ("49 US$")
+ * reorders to "$US 49" inside RTL text, whereas "$49" stays one unit under the bidi rules.
+ */
 export function formatPrice(amount: number, currency: string, lang: Lang): string {
   try {
-    return new Intl.NumberFormat(lang === 'ar' ? 'ar-u-nu-latn' : 'en-US', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency,
+      currencyDisplay: 'narrowSymbol',
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {
@@ -41,7 +46,8 @@ export interface PricingText {
 export function usePricingText(pricing: Pricing): PricingText {
   const { t, loc, lang } = useI18n();
   if (pricing.kind === 'quote') {
-    return { kind: 'quote', short: t('common.quoteBased'), label: t('common.quoteBased'), note: t('common.quoteNote') };
+    // Scope-dependent pricing: never shown as a number — the visitor requests a quote.
+    return { kind: 'quote', short: t('common.requestQuote'), label: t('common.requestQuote'), note: t('common.quoteNote') };
   }
   const price = t('common.priceFrom', { amount: formatPrice(pricing.amount, pricing.currency, lang), per: loc(pricing.per) });
   return {
