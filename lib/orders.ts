@@ -25,6 +25,8 @@ export function publicOrder(doc: OrderDoc): PublicOrder {
     organisation: doc.organisation ?? '',
     message: doc.message ?? '',
     createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : null,
+    paymentMethod: doc.paymentMethod === 'stripe' ? 'stripe' : null,
+    paidAt: doc.paidAt ? new Date(doc.paidAt).toISOString() : null,
     items: (doc.items ?? []).map((i) => ({
       slug: i.slug,
       name: { en: i.name?.en ?? i.slug, ar: i.name?.ar ?? '' },

@@ -21,4 +21,8 @@ export interface PublicOrder {
   message: string;
   createdAt: string | null;
   items: PublicOrderItem[];
+  /** Day 5: 'stripe' when the order was saved after a successful Stripe Checkout payment (test mode). */
+  paymentMethod: 'stripe' | null;
+  /** When the payment was confirmed (ISO), or null. */
+  paidAt: string | null;
 }

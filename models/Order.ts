@@ -39,9 +39,21 @@ const OrderSchema = new Schema(
     message: { type: String, default: '', maxlength: 2000 },
     // Ownership / written-authorization confirmation (required when the order includes penetration testing).
     authorizationConfirmed: { type: Boolean, default: false },
+    // ----- Day 5: Stripe Checkout (TEST MODE). Set only on orders saved after a successful payment. -----
+    // The order is written once Stripe reports the session as paid (success page check or webhook), with the
+    // amount Stripe actually charged. stripeSessionId is unique, so both paths together still save ONE order.
+    paymentMethod: { type: String, enum: ['stripe'], default: null },
+    stripeSessionId: { type: String },
+    paymentIntentId: { type: String, default: null },
+    currency: { type: String, default: 'usd' },
+    amountPaidCents: { type: Number, default: null, min: 0 },
+    paidAt: { type: Date, default: null },
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );
+
+// One order per Stripe Checkout Session (idempotent fulfilment). Partial index: older orders have no session id.
+OrderSchema.index({ stripeSessionId: 1 }, { unique: true, partialFilterExpression: { stripeSessionId: { $type: 'string' } } });
 
 export type OrderFields = InferSchemaType<typeof OrderSchema>;
 
