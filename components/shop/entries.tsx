@@ -18,6 +18,8 @@ import type SignupViewT from './views/SignupView';
 import type LoginViewT from './views/LoginView';
 import type OrdersViewT from './views/OrdersView';
 import type OrderDetailsViewT from './views/OrderDetailsView';
+import type CheckoutSuccessViewT from './views/CheckoutSuccessView';
+import type CheckoutCancelViewT from './views/CheckoutCancelView';
 
 const loading = () => <ShopSkeleton />;
 
@@ -28,6 +30,8 @@ const SignupView = dynamic(() => import('./views/SignupView'), { ssr: false, loa
 const LoginView = dynamic(() => import('./views/LoginView'), { ssr: false, loading });
 const OrdersView = dynamic(() => import('./views/OrdersView'), { ssr: false, loading });
 const OrderDetailsView = dynamic(() => import('./views/OrderDetailsView'), { ssr: false, loading });
+const CheckoutSuccessView = dynamic(() => import('./views/CheckoutSuccessView'), { ssr: false, loading });
+const CheckoutCancelView = dynamic(() => import('./views/CheckoutCancelView'), { ssr: false, loading });
 
 /** Wraps a client-only view: registers the database products and the session before it loads. */
 function entry<P extends { products: Service[] }>(View: ComponentType<P>) {
@@ -46,3 +50,5 @@ export const SignupEntry = entry(SignupView as ComponentType<ComponentProps<type
 export const LoginEntry = entry(LoginView as ComponentType<ComponentProps<typeof LoginViewT>>);
 export const OrdersEntry = entry(OrdersView as ComponentType<ComponentProps<typeof OrdersViewT>>);
 export const OrderDetailsEntry = entry(OrderDetailsView as ComponentType<ComponentProps<typeof OrderDetailsViewT>>);
+export const CheckoutSuccessEntry = entry(CheckoutSuccessView as ComponentType<ComponentProps<typeof CheckoutSuccessViewT>>);
+export const CheckoutCancelEntry = entry(CheckoutCancelView as ComponentType<ComponentProps<typeof CheckoutCancelViewT>>);

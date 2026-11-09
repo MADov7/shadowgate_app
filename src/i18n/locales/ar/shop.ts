@@ -54,5 +54,5 @@ export const shopAr: Record<keyof typeof shopEn, string> = {
   featuredTitle: 'نقاط بداية شائعة',
   featuredViewDetails: 'عرض التفاصيل',
   storeLink: 'افتح المتجر كاملًا',
-  footerNote: 'عرض تجريبي لمشروع دراسي — لا مدفوعات أو فحوصات أو مراقبة حقيقية.',
+  footerNote: 'عرض تجريبي لمشروع دراسي — الدفع بوضع Stripe التجريبي فقط (بدون أموال حقيقية)، ولا فحوصات أو مراقبة حقيقية.',
 };

@@ -20,6 +20,7 @@ import { brandAr } from './brand';
 import { footerAr } from './footer';
 import { shopAr } from './shop';
 import { authAr } from './auth';
+import { payAr } from './pay';
 
 export const ar = {
   common: commonAr,
@@ -43,4 +44,5 @@ export const ar = {
   footer: footerAr,
   shop: shopAr,
   auth: authAr,
+  pay: payAr,
 };

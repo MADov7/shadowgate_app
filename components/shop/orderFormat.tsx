@@ -1,6 +1,6 @@
 // Display helpers for orders (shared by My Orders and the order details page).
 import Link from 'next/link';
-import { CheckCircle2, Clock3 } from 'lucide-react';
+import { CheckCircle2, Clock3, CreditCard } from 'lucide-react';
 import type { PublicOrder } from '@/src/data/orderTypes';
 import { getPackage, isPackageId } from '@/src/data/packages';
 import { formatNumber, useI18n } from '@/src/i18n';
@@ -51,14 +51,25 @@ export function OrderItems({ order }: { order: PublicOrder }) {
 
 export function OrderTotals({ order }: { order: PublicOrder }) {
   const { t, loc, lang } = useI18n();
+  const fmtDate = useOrderDate();
   const pkg = order.packageSlug && isPackageId(order.packageSlug) ? getPackage(order.packageSlug) : null;
+  const paidOnline = order.status === 'paid' && order.paymentMethod === 'stripe';
   return (
     <div className="order-totals">
       {pkg ? <p className="order-totals__pkg">{t('auth.orderPackage', { name: loc(pkg.name) })}</p> : null}
       {order.total > 0 ? (
         <p className="order-totals__sum">
-          <span>{t('auth.orderTotal')}</span>
+          <span>{paidOnline ? t('pay.orderAmountPaid') : t('auth.orderTotal')}</span>
           <strong>{formatPrice(order.total, 'USD', lang)}</strong>
+        </p>
+      ) : null}
+      {paidOnline ? (
+        <p className="order-totals__paid" data-testid="order-paid-online">
+          <CreditCard aria-hidden="true" />
+          <span>
+            {t('pay.orderPaidVia')}
+            {order.paidAt ? ` · ${t('pay.orderPaidOn', { date: fmtDate(order.paidAt) })}` : ''}
+          </span>
         </p>
       ) : null}
       {order.hasQuoteItems ? <p className="order-totals__note">{t('auth.orderQuoteNote')}</p> : null}

@@ -20,6 +20,7 @@ import { brandEn } from './brand';
 import { footerEn } from './footer';
 import { shopEn } from './shop';
 import { authEn } from './auth';
+import { payEn } from './pay';
 
 export const en = {
   common: commonEn,
@@ -43,4 +44,5 @@ export const en = {
   footer: footerEn,
   shop: shopEn,
   auth: authEn,
+  pay: payEn,
 };

@@ -3,7 +3,7 @@
 // The basket is the same saved store the home page uses, so the selection survives navigation and signing in.
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { ArrowRight, CreditCard, Loader2, Lock, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 import type { Service, ServiceId } from '@/src/data/types';
 import { getService, isServiceId } from '@/src/data/services';
 import { getPackage } from '@/src/data/packages';
@@ -11,6 +11,7 @@ import { formatNumber, useI18n } from '@/src/i18n';
 import { MAX_QTY, MIN_QTY, useBasket, useBasketCount } from '@/src/state/basket';
 import { removeServiceFromRequest } from '@/src/state/actions';
 import { useUI } from '@/src/state/ui';
+import { useSession } from '@/src/state/session';
 import { ServiceIcon } from '@/src/components/ui/ServiceIcon';
 import { formatPrice, usePricingText } from '@/src/sections/Catalog/commerce';
 import { PackageSelector } from '@/src/overlays/BasketDrawer';
@@ -91,6 +92,85 @@ function CartRow({ service }: { service: Service }) {
   );
 }
 
+/**
+ * Day 5 — "Pay now" with Stripe Checkout (TEST MODE). Only fixed-price (illustrative) services are paid online;
+ * the browser sends slugs + quantities and the server prices them from MongoDB, creates the Checkout Session and
+ * returns Stripe's hosted payment URL. Signed-out visitors are sent to Log in first (the order is saved to the account).
+ */
+function PayNowBox({ payable, quantities, hasQuote }: { payable: Service[]; quantities: Partial<Record<ServiceId, number>>; hasQuote: boolean }) {
+  const { t, loc, lang } = useI18n();
+  const status = useSession((s) => s.status);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<{ message: string; login?: boolean } | null>(null);
+  const amount = payable.reduce((sum, s) => (s.pricing.kind === 'illustrative' ? sum + s.pricing.amount * (quantities[s.id] ?? MIN_QTY) : sum), 0);
+
+  const pay = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ items: payable.map((s) => ({ slug: s.id, quantity: quantities[s.id] ?? MIN_QTY })) }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string; code?: string };
+      if (res.status === 201 && data.url) {
+        window.location.assign(data.url); // Stripe's hosted checkout page (test mode)
+        return; // keep the busy state while the browser leaves
+      }
+      if (res.status === 401) {
+        useSession.getState().setUser(null);
+        setError({ message: t('pay.paySessionExpired'), login: true });
+      } else if (data.code === 'payments_unavailable') {
+        setError({ message: t('pay.payUnavailable') });
+      } else {
+        setError({ message: t('pay.payFailed', { reason: data.error ?? '' }).trim() });
+      }
+    } catch {
+      setError({ message: t('pay.payFailed', { reason: t('pay.payNetwork') }) });
+    }
+    setBusy(false);
+  };
+
+  return (
+    <div className="pay-box" role="group" aria-labelledby="pay-box-title">
+      <h3 id="pay-box-title" className="pay-box__title">
+        <CreditCard aria-hidden="true" />
+        {t('pay.title')}
+        <span className="badge pay-test-badge">{t('pay.testBadge')}</span>
+      </h3>
+      <p className="pay-box__covers">{t('pay.payCovers', { names: payable.map((s) => loc(s.name)).join(lang === 'ar' ? '، ' : ', ') })}</p>
+      {status === 'signed-in' ? (
+        <button type="button" className="btn btn--primary btn--block" onClick={pay} disabled={busy} aria-busy={busy} data-testid="pay-now">
+          {busy ? <Loader2 className="pay-result__spin" aria-hidden="true" /> : <Lock aria-hidden="true" />}
+          {busy ? t('pay.payBusy') : t('pay.payNow', { amount: formatPrice(amount, 'USD', lang) })}
+        </button>
+      ) : (
+        <>
+          <Link className="btn btn--primary btn--block" href="/login?next=/cart" data-testid="pay-login">
+            <Lock aria-hidden="true" />
+            {t('pay.payLogin')}
+          </Link>
+          <p className="pay-box__hint">{t('pay.payLoginHint')}</p>
+        </>
+      )}
+      {error ? (
+        <p className="pay-box__error" role="alert">
+          {error.message}{' '}
+          {error.login ? (
+            <Link className="btn btn--link" href="/login?next=/cart">
+              {t('pay.loginAgain')}
+            </Link>
+          ) : null}
+        </p>
+      ) : null}
+      <p className="pay-box__test">{t('pay.testNote')}</p>
+      {hasQuote ? <p className="pay-box__hint">{t('pay.payQuoteNote')}</p> : null}
+    </div>
+  );
+}
+
 export default function CartView(_props: { products: Service[] }) {
   const { t, loc, lang } = useI18n();
   const serviceIds = useBasket((s) => s.serviceIds);
@@ -107,6 +187,7 @@ export default function CartView(_props: { products: Service[] }) {
     0,
   );
   const hasIllustrative = services.some((s) => s.pricing.kind === 'illustrative');
+  const payable = services.filter((s) => s.pricing.kind === 'illustrative' && !s.requiresAuthorization);
   const pkg = packageId ? getPackage(packageId) : null;
   const quoteLines = services.filter((s) => s.pricing.kind === 'quote').length + (pkg && pkg.pricing.kind === 'quote' ? 1 : 0);
 
@@ -182,8 +263,10 @@ export default function CartView(_props: { products: Service[] }) {
               {hasIllustrative ? <p className="shop-sum__note">{t('shop.cartIllustrativeNote')}</p> : null}
               {quoteLines > 0 ? <p className="shop-sum__note">{t('shop.cartQuoteCount', { count: formatNumber(quoteLines, lang) })}</p> : null}
 
+              {payable.length > 0 ? <PayNowBox payable={payable} quantities={quantities} hasQuote={quoteLines > 0} /> : null}
+
               <div className="shop-sum__actions">
-                <Link className="btn btn--primary btn--block" href="/#contact">
+                <Link className={`btn ${payable.length > 0 ? 'btn--secondary' : 'btn--primary'} btn--block`} href="/#contact">
                   {t('shop.cartContinue')}
                   <ArrowRight className="icon-flip" aria-hidden="true" />
                 </Link>

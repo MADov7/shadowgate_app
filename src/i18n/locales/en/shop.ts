@@ -54,5 +54,5 @@ export const shopEn = {
   featuredTitle: 'Popular starting points',
   featuredViewDetails: 'View details',
   storeLink: 'Open the full store',
-  footerNote: 'Classwork demo — no real payments, scans or monitoring.',
+  footerNote: 'Classwork demo — payments run in Stripe test mode only (no real money); no real scans or monitoring.',
 } as const;
