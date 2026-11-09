@@ -2,6 +2,10 @@
 // Honest by design: submitting validates, then saves the request in this browser only (src/lib/requests.ts)
 // and says exactly that — "Demo request saved in this browser. No message has been sent."
 import { useEffect, useId, useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import type { PublicOrder } from '../../data/orderTypes';
+import { useSession } from '../../state/session';
+import { orderErrorKey } from '../../lib/orderErrors';
 import {
   ArrowRight,
   CheckCircle2,
@@ -9,6 +13,7 @@ import {
   FileSignature,
   FileText,
   LayoutGrid,
+  LogIn,
   PackageCheck,
   Pencil,
   PhoneCall,
@@ -67,9 +72,11 @@ function controlId(field: RequestField): string {
 export function Contact() {
   const { t } = useI18n();
   const [saved, setSaved] = useState<SaveResult<DemoRequestRecord> | null>(null);
+  const [order, setOrder] = useState<PublicOrder | null>(null);
+  const signedIn = useSession((s) => s.status === 'signed-in');
   const [formKey, setFormKey] = useState(0);
 
-  useEffect(() => scheduleRefresh(), [saved]);
+  useEffect(() => scheduleRefresh(), [saved, order]);
 
   return (
     <section id={SECTION_IDS.contact} className="section contact" aria-labelledby="contact-title">
@@ -80,14 +87,23 @@ export function Contact() {
             <h2 id="contact-title" className="h2">
               {t('contact.title')}
             </h2>
-            <p className="lead">{t('contact.lead')}</p>
+            <p className="lead">{signedIn ? t('auth.contactLeadAccount') : t('contact.lead')}</p>
           </header>
           <CurrentRequest />
           <RealEngagement />
         </div>
 
         <div className="panel contact__panel">
-          {saved ? (
+          {order ? (
+            <OrderConfirmation
+              order={order}
+              onNew={() => {
+                setOrder(null);
+                setFormKey((k) => k + 1);
+                requestAnimationFrame(() => focusControl('cf-fullName'));
+              }}
+            />
+          ) : saved ? (
             <Confirmation
               result={saved}
               onNew={() => {
@@ -97,7 +113,7 @@ export function Contact() {
               }}
             />
           ) : (
-            <RequestForm key={formKey} onSaved={setSaved} />
+            <RequestForm key={formKey} onSaved={setSaved} onOrder={setOrder} />
           )}
         </div>
       </div>
@@ -193,14 +209,36 @@ function RealEngagement() {
 }
 
 // ---------------------------------------------------------------------------------------------
-function RequestForm({ onSaved }: { onSaved: (result: SaveResult<DemoRequestRecord>) => void }) {
+function RequestForm({
+  onSaved,
+  onOrder,
+}: {
+  onSaved: (result: SaveResult<DemoRequestRecord>) => void;
+  onOrder: (order: PublicOrder) => void;
+}) {
   const { t, lang } = useI18n();
   const uid = useId();
   const serviceIds = useBasket((s) => s.serviceIds);
   const packageId = useBasket((s) => s.packageId);
   const needsAuth = requestNeedsAuthorization(serviceIds, packageId);
-  const [values, setValues] = useState<RequestFormValues>(EMPTY_REQUEST_FORM);
+  const sessionUser = useSession((s) => (s.status === 'signed-in' ? s.user : null));
+  const [values, setValues] = useState<RequestFormValues>(() => ({
+    ...EMPTY_REQUEST_FORM,
+    fullName: sessionUser?.name ?? '',
+    email: sessionUser?.email ?? '',
+  }));
+  // Prefill name + email once the session (GET /api/auth/me) has loaded them; never overwrite what the user typed.
+  useEffect(() => {
+    if (!sessionUser) return;
+    setValues((prev) => ({
+      ...prev,
+      fullName: prev.fullName || sessionUser.name,
+      email: prev.email || sessionUser.email || '',
+    }));
+  }, [sessionUser]);
   const [attempted, setAttempted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // After the first submit attempt, errors update live as the visitor fixes fields.
   const errors = attempted ? validateRequestForm(values, { requiresAuthorization: needsAuth }) : {};
@@ -209,12 +247,56 @@ function RequestForm({ onSaved }: { onSaved: (result: SaveResult<DemoRequestReco
   const set = <K extends RequestField>(key: K, value: RequestFormValues[K]) =>
     setValues((prev) => ({ ...prev, [key]: value }));
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const found = validateRequestForm(values, { requiresAuthorization: needsAuth });
     setAttempted(true);
+    setSubmitError(null);
     if (hasErrors(found)) {
       requestAnimationFrame(() => focusControl(summaryId));
+      return;
+    }
+    // Signed in → a real pending order in MongoDB (server validates products + quantities and derives prices).
+    // The confirmation is shown ONLY after the server confirms the write (201).
+    if (useSession.getState().status === 'signed-in') {
+      const basket = useBasket.getState();
+      if (basket.serviceIds.length === 0 && basket.packageId === null) {
+        setSubmitError(t('auth.orderEmpty'));
+        return;
+      }
+      setSubmitting(true);
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            items: basket.serviceIds.map((slug) => ({ slug, quantity: basket.quantities[slug] ?? 1 })),
+            packageSlug: basket.packageId,
+            requestType: values.customerType === 'individual' ? 'personal' : 'business',
+            organisation: values.organisation.trim(),
+            phone: normalizeDigits(values.phone.trim()),
+            message: values.message.trim(),
+            authorizationConfirmed: needsAuth && values.authorization,
+          }),
+        });
+        const data = (await res.json().catch(() => ({}))) as { order?: PublicOrder; fields?: Record<string, unknown>; unknown?: unknown[] };
+        if (res.status === 201 && data.order) {
+          useBasket.getState().clear();
+          onOrder(data.order);
+          return;
+        }
+        if (res.status === 401) {
+          useSession.getState().setUser(null);
+          setSubmitError(t('auth.orderSessionExpired'));
+          return;
+        }
+        setSubmitError(t('auth.orderFailed', { reason: t(orderErrorKey(res.status, data)) }));
+      } catch {
+        setSubmitError(t('auth.orderFailed', { reason: t('auth.errNetwork') }));
+      } finally {
+        setSubmitting(false);
+      }
       return;
     }
     const result = saveRequest({
@@ -249,7 +331,11 @@ function RequestForm({ onSaved }: { onSaved: (result: SaveResult<DemoRequestReco
         <h3 id="contact-form-title" className="contact-form__title">
           {t('contact.formTitle')}
         </h3>
-        <span className="badge badge--demo">{t('common.demoBadge')}</span>
+        {sessionUser ? (
+          <span className="badge badge--teal">{t('auth.accountBadge')}</span>
+        ) : (
+          <span className="badge badge--demo">{t('common.demoBadge')}</span>
+        )}
       </div>
       <p className="contact-form__legend">{t('contact.requiredLegend')}</p>
 
@@ -509,7 +595,7 @@ function RequestForm({ onSaved }: { onSaved: (result: SaveResult<DemoRequestReco
             onChange={(e) => set('acknowledge', e.target.checked)}
           />
           <span>
-            {t('contact.acknowledge')}
+            {sessionUser ? t('auth.orderAcknowledge') : t('contact.acknowledge')}
             <span className="field__req" aria-hidden="true">
               *
             </span>
@@ -518,18 +604,84 @@ function RequestForm({ onSaved }: { onSaved: (result: SaveResult<DemoRequestReco
         {errorText('acknowledge')}
       </div>
 
+      {sessionUser ? (
+        <p className="contact-account" data-testid="order-account-note">
+          <CheckCircle2 aria-hidden="true" />
+          <span>
+            {t('auth.signedInAs', { name: sessionUser.name })} · <Link href="/orders">{t('auth.myOrders')}</Link>
+          </span>
+        </p>
+      ) : (
+        <div className="contact-account contact-account--out" data-testid="order-login-hint">
+          <LogIn aria-hidden="true" />
+          <span>
+            {t('auth.orderLoginHint')}{' '}
+            <Link href={`/login?next=${encodeURIComponent('/#contact')}`}>{t('auth.orderLoginCta')}</Link>
+            {' · '}
+            <Link href={`/signup?next=${encodeURIComponent('/#contact')}`}>{t('auth.orderSignupCta')}</Link>
+          </span>
+        </div>
+      )}
+
+      {submitError ? (
+        <p className="contact-order-error" role="alert" data-testid="order-error">
+          {submitError}
+        </p>
+      ) : null}
+
       <div className="contact-form__submit">
-        <button type="submit" className="btn btn--primary btn--lg">
-          {t('contact.submit')}
+        <button type="submit" className="btn btn--primary btn--lg" disabled={submitting} aria-busy={submitting}>
+          {submitting ? t('auth.orderBusy') : sessionUser ? t('auth.placeOrder') : t('contact.submit')}
           <ArrowRight aria-hidden="true" className="icon-flip" />
         </button>
-        <p className="field__hint">{t('contact.submitNote')}</p>
+        <p className="field__hint">{sessionUser ? t('auth.placeOrderNote') : t('contact.submitNote')}</p>
       </div>
     </form>
   );
 }
 
 // ---------------------------------------------------------------------------------------------
+/** Shown only after POST /api/orders returned 201 (the order is stored in MongoDB). */
+function OrderConfirmation({ order, onNew }: { order: PublicOrder; onNew: () => void }) {
+  const { t, lang } = useI18n();
+  const code = `SG-${order.id.slice(-6).toUpperCase()}`;
+  useEffect(() => {
+    requestAnimationFrame(() => focusControl('contact-done'));
+  }, []);
+  return (
+    <div id="contact-done" className="contact-done" role="region" tabIndex={-1} aria-labelledby="contact-done-title" data-testid="order-confirmation">
+      <div className="contact-done__top">
+        <span className="contact-done__seal" aria-hidden="true">
+          <CheckCircle2 />
+        </span>
+      </div>
+      <h3 id="contact-done-title" className="contact-done__title">
+        {t('auth.orderSavedTitle')}
+      </h3>
+      <p className="contact-done__note">{t('auth.orderSavedBody', { id: code })}</p>
+      <div className="contact-done__items">
+        <p className="contact-done__label">{t('auth.orderItems')}</p>
+        <ul className="contact-req__list">
+          {order.items.map((item) => (
+            <li key={item.slug} className="contact-req__item">
+              {(lang === 'ar' && item.name.ar) || item.name.en} × {item.quantity}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="contact-done__actions">
+        <Link className="btn btn--primary btn--sm" href={`/orders/${order.id}`}>
+          {t('auth.orderSavedLink')}
+        </Link>
+        <button type="button" className="btn btn--secondary btn--sm" onClick={onNew}>
+          <RotateCcw aria-hidden="true" />
+          {t('auth.orderNew')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Confirmation({ result, onNew }: { result: SaveResult<DemoRequestRecord>; onNew: () => void }) {
   const { t, loc } = useI18n();
   const { record, persisted } = result;
@@ -545,7 +697,7 @@ function Confirmation({ result, onNew }: { result: SaveResult<DemoRequestRecord>
       ui.toast({ tone: 'info', message: t('contact.basketAlreadyEmpty') });
       return;
     }
-    const before: BasketSnapshot = { serviceIds: [...state.serviceIds], packageId: state.packageId };
+    const before: BasketSnapshot = { serviceIds: [...state.serviceIds], packageId: state.packageId, quantities: { ...state.quantities } };
     state.clear();
     ui.toast({
       tone: 'info',

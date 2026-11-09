@@ -2,6 +2,10 @@
 // Day + time are radio groups generated locally from today's date — no real calendar or availability exists.
 // Saving writes to localStorage only and says so: "Demo booking saved in this browser. No booking has been made."
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import Link from 'next/link';
+import { useSession } from '../state/session';
+import { orderErrorKey } from '../lib/orderErrors';
+import '../sections/Contact/Contact.css';
 import { ArrowRight, CalendarCheck, FlaskConical, MapPin, RotateCcw, Video } from 'lucide-react';
 import { Dialog, DialogClose } from '../components/ui/Dialog';
 import { useI18n, type TKey } from '../i18n';
@@ -69,6 +73,10 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
   const [values, setValues] = useState<BookingFormValues>(() => emptyValues(prefill));
   const [attempted, setAttempted] = useState(false);
   const [saved, setSaved] = useState<SaveResult<DemoBookingRecord> | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const signedIn = useSession((st) => st.status === 'signed-in');
 
   const ctx = { serviceIds, dates, times: BOOKING_TIMES };
   const errors = attempted ? validateBookingForm(values, ctx) : {};
@@ -84,12 +92,48 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
     return `bk-${field}`;
   };
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setAttempted(true);
+    setSubmitError(null);
     if (hasErrors(validateBookingForm(values, ctx))) {
       requestAnimationFrame(() => focusControl('bk-errors'));
       return;
+    }
+    // Signed in → save the booking as a pending order in MongoDB first; confirm only after the write succeeds.
+    if (useSession.getState().status === 'signed-in') {
+      setBusy(true);
+      try {
+        // Stored in the visitor's language, so it reads correctly on their My Orders page.
+        const when = t('auth.bookingNote', {
+          date: formatDayParts(values.date, lang).full,
+          time: formatSlot(values.time, lang),
+          format: values.format === 'online' ? t('booking.formatOnline') : t('booking.formatInPerson'),
+        });
+        const note = values.notes.trim() ? `${when} — ${values.notes.trim()}` : when;
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ items: [{ slug: values.serviceId, quantity: 1 }], requestType: 'personal', message: note }),
+        });
+        const data = (await res.json().catch(() => ({}))) as { order?: { id: string }; fields?: Record<string, unknown>; unknown?: unknown[] };
+        if (res.status !== 201 || !data.order) {
+          if (res.status === 401) {
+            useSession.getState().setUser(null);
+            setSubmitError(t('auth.orderSessionExpired'));
+          } else {
+            setSubmitError(t('auth.orderFailed', { reason: t(orderErrorKey(res.status, data)) }));
+          }
+          return;
+        }
+        setOrderId(data.order.id);
+      } catch {
+        setSubmitError(t('auth.orderFailed', { reason: t('auth.errNetwork') }));
+        return;
+      } finally {
+        setBusy(false);
+      }
     }
     setSaved(
       saveBooking({
@@ -109,9 +153,11 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
     return (
       <BookingConfirmation
         result={saved}
+        orderId={orderId}
         onClose={onClose}
         onAnother={() => {
           setSaved(null);
+          setOrderId(null);
           setAttempted(false);
           setValues(emptyValues(saved.record.serviceId));
         }}
@@ -139,7 +185,7 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
             {t('booking.title')}
           </h2>
           <p id="bk-intro" className="bk-head__intro">
-            {t('booking.intro')}
+            {signedIn ? t('auth.bookingIntroAccount') : t('booking.intro')}
           </p>
         </div>
         <DialogClose onClick={onClose} />
@@ -380,15 +426,20 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
             {errorText('notes')}
           </div>
         </form>
+        {submitError ? (
+          <p className="contact-order-error" role="alert" data-testid="booking-error">
+            {submitError}
+          </p>
+        ) : null}
       </div>
 
       <footer className="sg-dialog__foot">
         <button type="button" className="btn btn--ghost" onClick={onClose}>
           {t('common.cancel')}
         </button>
-        <button type="submit" form="bk-form" className="btn btn--primary">
+        <button type="submit" form="bk-form" className="btn btn--primary" disabled={busy} aria-busy={busy}>
           <CalendarCheck aria-hidden="true" />
-          {t('booking.submit')}
+          {busy ? t('auth.orderBusy') : t('booking.submit')}
         </button>
       </footer>
     </>
@@ -397,10 +448,13 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
 
 function BookingConfirmation({
   result,
+  orderId,
   onClose,
   onAnother,
 }: {
   result: SaveResult<DemoBookingRecord>;
+  /** Set when the booking was also saved as a pending order in the signed-in user's account. */
+  orderId: string | null;
   onClose: () => void;
   onAnother: () => void;
 }) {
@@ -417,12 +471,14 @@ function BookingConfirmation({
     <>
       <header className="sg-dialog__head bk-head">
         <div className="bk-head__text">
-          <span className="badge badge--demo">
-            <FlaskConical aria-hidden="true" />
-            {t('booking.badge')}
-          </span>
+          {orderId ? null : (
+            <span className="badge badge--demo">
+              <FlaskConical aria-hidden="true" />
+              {t('booking.badge')}
+            </span>
+          )}
           <h2 id="bk-title" className="bk-head__title">
-            {persisted ? t('booking.successTitle') : t('booking.failedTitle')}
+            {orderId ? t('auth.bookingSavedTitle') : persisted ? t('booking.successTitle') : t('booking.failedTitle')}
           </h2>
         </div>
         <DialogClose onClick={onClose} />
@@ -430,14 +486,26 @@ function BookingConfirmation({
 
       <div className="sg-dialog__body">
         <div id="bk-done" className="bk-done" tabIndex={-1}>
-          <p id="bk-intro" className="bk-done__note" data-failed={!persisted || undefined}>
-            {persisted ? t('booking.successNote') : t('booking.saveFailed')}
-          </p>
+          {orderId ? null : (
+            <p id="bk-intro" className="bk-done__note" data-failed={!persisted || undefined}>
+              {persisted ? t('booking.successNote') : t('booking.saveFailed')}
+            </p>
+          )}
+          {orderId ? (
+            <p className="contact-account" data-testid="booking-order-note">
+              <span>
+                {t('auth.bookingSaved', { id: `SG-${orderId.slice(-6).toUpperCase()}` })}{' '}
+                <Link href={`/orders/${orderId}`} onClick={onClose}>
+                  {t('auth.orderSavedLink')}
+                </Link>
+              </span>
+            </p>
+          ) : null}
 
           <div className="bk-ticket">
             <div className="bk-ticket__main">
               <span className="telemetry" aria-hidden="true">
-                SG//DEMO BOOKING
+                {orderId ? 'SG//BOOKING' : 'SG//DEMO BOOKING'}
               </span>
               <dl className="bk-ticket__rows">
                 <div>
