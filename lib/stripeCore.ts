@@ -10,6 +10,16 @@ import crypto from 'node:crypto';
 
 export type KeyCheck = { ok: true } | { ok: false; reason: 'missing' | 'live' | 'malformed' };
 
+/**
+ * Hosting dashboards sometimes store a pasted value with extra text around the key (quotes, spaces, a line break,
+ * or "STRIPE_SECRET_KEY=" in front). Pull out the Stripe secret/restricted key itself; otherwise return the trimmed value.
+ */
+export function normalizeSecretKey(raw: string | undefined | null): string | undefined {
+  if (!raw) return undefined;
+  const found = /(?:^|[^A-Za-z0-9])((?:sk|rk)_(?:test|live)_[A-Za-z0-9]{10,})(?![A-Za-z0-9])/.exec(raw);
+  return found ? found[1] : raw.trim();
+}
+
 /** Accepts only Stripe *test* secret / restricted keys (sk_test_… / rk_test_…). */
 export function checkTestSecretKey(key: string | undefined | null): KeyCheck {
   if (!key) return { ok: false, reason: 'missing' };

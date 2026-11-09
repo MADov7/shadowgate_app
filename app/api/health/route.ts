@@ -1,12 +1,12 @@
 import { json } from '@/lib/http';
-import { checkTestSecretKey } from '@/lib/stripeCore';
+import { checkTestSecretKey, normalizeSecretKey } from '@/lib/stripeCore';
 
 export const dynamic = 'force-dynamic';
 
 // GET /api/health — which server settings are present (yes/no only; never a value or part of one).
 // Lets the owner check a deployment's configuration without opening the hosting dashboard.
 export async function GET() {
-  const key = checkTestSecretKey(process.env.STRIPE_SECRET_KEY?.trim());
+  const key = checkTestSecretKey(normalizeSecretKey(process.env.STRIPE_SECRET_KEY));
   return json({
     ok: true,
     database: Boolean(process.env.MONGODB_URI),

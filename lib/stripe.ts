@@ -4,7 +4,7 @@ import 'server-only';
 // production — the equivalent of "Supabase Secrets" in the class brief). It is never logged, returned in a response,
 // or bundled for the browser (this file imports 'server-only', so a client import fails the build).
 import { MissingSecretError } from './errors';
-import { checkTestSecretKey, encodeForm, isCheckoutSessionId, type FormValue } from './stripeCore';
+import { checkTestSecretKey, encodeForm, isCheckoutSessionId, normalizeSecretKey, type FormValue } from './stripeCore';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -29,7 +29,7 @@ export class StripeKeyError extends Error {
 }
 
 function secretKey(): string {
-  const key = process.env.STRIPE_SECRET_KEY?.trim();
+  const key = normalizeSecretKey(process.env.STRIPE_SECRET_KEY);
   const check = checkTestSecretKey(key);
   if (!check.ok) {
     if (check.reason === 'missing') throw new MissingSecretError('STRIPE_SECRET_KEY');
@@ -40,7 +40,7 @@ function secretKey(): string {
 
 /** True when a usable test key is configured (lets the UI explain instead of failing later). */
 export function stripeConfigured(): boolean {
-  return checkTestSecretKey(process.env.STRIPE_SECRET_KEY?.trim()).ok;
+  return checkTestSecretKey(normalizeSecretKey(process.env.STRIPE_SECRET_KEY)).ok;
 }
 
 type FetchLike = (input: string, init: RequestInit) => Promise<Response>;

@@ -118,3 +118,17 @@ describe('small helpers', () => {
     expect(isCheckoutSessionId(42)).toBe(false);
   });
 });
+
+describe('normalizeSecretKey (values pasted into hosting dashboards)', () => {
+  it('extracts the key from quotes, spaces, line breaks or a NAME= prefix', async () => {
+    const { normalizeSecretKey } = await import('./stripeCore');
+    const key = fakeKey('sk', 'test', '51AbCdEfGhIjKlMnOp');
+    for (const raw of [key, ` ${key} `, `"${key}"`, `'${key}'`, `${key}\r\n`, `STRIPE_SECRET_KEY=${key}`, `STRIPE_SECRET_KEY="${key}"\n`]) {
+      expect(normalizeSecretKey(raw)).toBe(key);
+      expect(checkTestSecretKey(normalizeSecretKey(raw))).toEqual({ ok: true });
+    }
+    // a live key is still recognised as live (and refused)
+    expect(checkTestSecretKey(normalizeSecretKey(`"${fakeKey('sk', 'live', '51AbCdEfGhIjKlMnOp')}"`))).toEqual({ ok: false, reason: 'live' });
+    expect(normalizeSecretKey(undefined)).toBeUndefined();
+  });
+});
