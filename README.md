@@ -7,7 +7,7 @@ Visitors travel through a 3D gateway, a threat radar and a service constellation
 products from **MongoDB Atlas**, accounts with a signed **HttpOnly session cookie**, protected **My Orders**, and
 online payment with **Stripe Checkout in test mode**.
 
-**Live:** https://shadow-gate-storefront.netlify.app · **Author:** Soud Alkaban
+**Live (Vercel):** https://shadowgate-app.vercel.app · **Also on Netlify:** https://shadow-gate-storefront.netlify.app · **Author:** Soud Alkaban
 
 ## Stack
 
@@ -17,7 +17,7 @@ online payment with **Stripe Checkout in test mode**.
 | Data | MongoDB Atlas via Mongoose — `products`, `users`, `orders` |
 | Auth | bcrypt password hashes, JWT in an HttpOnly `SameSite=Lax` cookie, server-side checks on every protected page/API |
 | Payments (Day 5) | Stripe Checkout, **test mode only** — server route creates the session, webhook saves paid orders |
-| Hosting | Netlify (Next.js runtime). Builds also work on Vercel unchanged |
+| Hosting | Vercel (imported from this GitHub repo — every push to `main` redeploys) and Netlify |
 
 ## Day 5 — payments (Stripe test mode)
 
