@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="E-commerce Security Review">
+  <defs><radialGradient id="g" cx="50%" cy="42%" r="65%"><stop offset="0" stop-color="#35F2C4" stop-opacity=".22"/><stop offset="1" stop-color="#070B14" stop-opacity="0"/></radialGradient></defs>
+  <rect width="320" height="240" rx="24" fill="#070B14"/>
+  <rect width="320" height="240" rx="24" fill="url(#g)"/>
+  <path d="M0 60H320M0 120H320M0 180H320M80 0V240M160 0V240M240 0V240" stroke="#F3F6FA" stroke-opacity=".05"/>
+  <rect x="96" y="56" width="128" height="128" rx="28" fill="#0D1424" stroke="#35F2C4" stroke-opacity=".35"/>
+  <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#35F2C4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart" aria-hidden="true" x="112" y="72"><path d="m2.05 2.05 1.099-.028a1 1 0 0 1 1.008.815l2.69 14.347A1 1 0 0 0 7.83 18H18"></path><path d="M4.563 5h16.435a1 1 0 0 1 .981 1.204l-1.026 6.226A2 2 0 0 1 18.962 14H6.25"></path><circle cx="18" cy="20" r="2"></circle><circle cx="8" cy="20" r="2"></circle></svg>
+  <rect x=".5" y=".5" width="319" height="239" rx="23.5" fill="none" stroke="#F3F6FA" stroke-opacity=".12"/>
+</svg>

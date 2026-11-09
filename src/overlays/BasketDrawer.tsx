@@ -2,6 +2,7 @@
 // Selected package + package selector (real radio group), selected services, empty state, inline
 // "clear all" confirmation and a polite live count. Persistence is automatic (zustand persist).
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { ArrowRight, CalendarCheck, Eye, LayoutGrid, Package, Repeat, Sparkles, Trash2, X } from 'lucide-react';
 import { Dialog, DialogClose } from '../components/ui/Dialog';
 import { ServiceIcon } from '../components/ui/ServiceIcon';
@@ -126,7 +127,7 @@ function PackageBlock({ id, onChange }: { id: PackageId; onChange: () => void })
   );
 }
 
-function PackageSelector({ value }: { value: PackageId | null }) {
+export function PackageSelector({ value }: { value: PackageId | null }) {
   const { t, loc } = useI18n();
   const options: Array<{ id: PackageId | null; name: string; hint: string; key: string }> = [
     { id: null, key: 'none', name: t('basket.selectorNone'), hint: t('basket.selectorNoneHint') },
@@ -335,6 +336,9 @@ function DrawerBody({ onClose }: { onClose: () => void }) {
               {t('basket.continue')}
               <ArrowRight className="icon-flip" aria-hidden="true" />
             </button>
+            <Link className="btn btn--secondary btn--sm bk-cart-link" href="/cart" onClick={onClose}>
+              {t('shop.cartPageLink')}
+            </Link>
             <button ref={clearBtn} type="button" className="btn btn--ghost btn--sm bk-clear" onClick={() => setConfirming(true)}>
               <Trash2 aria-hidden="true" />
               {t('basket.clearAll')}
