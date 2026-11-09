@@ -18,6 +18,8 @@ import { bookingAr } from './booking';
 import { contactAr } from './contact';
 import { brandAr } from './brand';
 import { footerAr } from './footer';
+import { shopAr } from './shop';
+import { authAr } from './auth';
 
 export const ar = {
   common: commonAr,
@@ -39,4 +41,6 @@ export const ar = {
   contact: contactAr,
   brand: brandAr,
   footer: footerAr,
+  shop: shopAr,
+  auth: authAr,
 };

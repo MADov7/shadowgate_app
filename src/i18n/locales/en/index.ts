@@ -18,6 +18,8 @@ import { bookingEn } from './booking';
 import { contactEn } from './contact';
 import { brandEn } from './brand';
 import { footerEn } from './footer';
+import { shopEn } from './shop';
+import { authEn } from './auth';
 
 export const en = {
   common: commonEn,
@@ -39,4 +41,6 @@ export const en = {
   contact: contactEn,
   brand: brandEn,
   footer: footerEn,
+  shop: shopEn,
+  auth: authEn,
 };

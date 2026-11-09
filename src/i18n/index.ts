@@ -5,6 +5,7 @@ import { create } from 'zustand';
 import type { L10n, L10nList, Lang } from '../data/types';
 import { KEYS, readString, writeString } from '../lib/storage';
 import { urlFlag } from '../lib/capabilities';
+import { IS_DEV } from '../lib/env';
 import { en } from './locales/en';
 import { ar } from './locales/ar';
 
@@ -56,7 +57,7 @@ export function translateIn(lang: Lang, key: TKey, vars?: TVars): string {
   const fallback = dictionaries.en[ns] as Record<string, string> | undefined;
   const value = table?.[k] ?? fallback?.[k];
   if (value === undefined) {
-    if (import.meta.env.DEV) console.warn(`[i18n] missing key ${key}`);
+    if (IS_DEV) console.warn(`[i18n] missing key ${key}`);
     return key;
   }
   return interpolate(value, vars);

@@ -1,0 +1,41 @@
+/* Navigation account area (name + log out, or log in / sign up). */
+.sg-account {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.sg-account--loading {
+  width: 120px;
+  height: 36px;
+  border-radius: var(--r-pill);
+  background: rgba(243, 246, 250, 0.05);
+}
+.sg-account__user {
+  max-width: 190px;
+}
+.sg-account__name {
+  min-width: 0;
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sg-account--menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--sg-line);
+}
+.sg-account--menu .sg-account__user {
+  max-width: 100%;
+}
+.sg-account--menu .sg-account__name {
+  max-width: 24ch;
+}
+/* In menu mode (≤1320px) the bar version moves into the mobile menu. */
+@media (max-width: 1320px) {
+  .sg-nav__actions .sg-account--bar {
+    display: none;
+  }
+}
