@@ -51,3 +51,22 @@ describe('order validation (server)', () => {
     expect(validateOrderInput({ items: [], packageSlug: 'foundation' }).ok).toBe(true);
   });
 });
+
+describe('validateCheckoutInput (Day 5 — pay now)', () => {
+  it('keeps only slugs + quantities; ignores prices, totals and user ids from the browser', async () => {
+    const { validateCheckoutInput } = await import('./validators');
+    const r = validateCheckoutInput({ items: [{ slug: 'consultation', quantity: 2, price: 0.01 }], total: 1, userId: 'x', currency: 'jpy' });
+    expect(r).toEqual({ ok: true, data: { items: [{ slug: 'consultation', quantity: 2 }] } });
+  });
+  it('rejects empty, malformed, duplicate and oversized carts', async () => {
+    const { validateCheckoutInput } = await import('./validators');
+    expect(validateCheckoutInput({ items: [] })).toEqual({ ok: false, errors: { items: 'required' } });
+    expect(validateCheckoutInput({})).toEqual({ ok: false, errors: { items: 'required' } });
+    expect(validateCheckoutInput({ items: [{ slug: 'consultation', quantity: 0 }] }).ok).toBe(false);
+    expect(validateCheckoutInput({ items: [{ slug: 'consultation', quantity: 11 }] }).ok).toBe(false);
+    expect(validateCheckoutInput({ items: [{ slug: 'consultation', quantity: 1 }, { slug: 'consultation', quantity: 1 }] }).ok).toBe(false);
+    expect(validateCheckoutInput({ items: [{ slug: '../x', quantity: 1 }] }).ok).toBe(false);
+    const many = Array.from({ length: 21 }, (_, i) => ({ slug: `svc-${i}`, quantity: 1 }));
+    expect(validateCheckoutInput({ items: many })).toEqual({ ok: false, errors: { items: 'tooLong' } });
+  });
+});
