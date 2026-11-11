@@ -25,3 +25,6 @@ demo-accounts.local.txt
 
 # Key names only (no values) — safe to commit
 !.env.example
+
+# Local agent session state (oh-my-claudecode)
+.omc/

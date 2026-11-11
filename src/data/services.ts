@@ -1,7 +1,7 @@
 // SERVICE CATALOG — runtime registry. There is NO hardcoded catalog here: the products (services) are loaded
-// from MongoDB Atlas on the server (lib/catalog.ts) and handed to the browser, which calls registerServices()
+// from Supabase on the server (lib/catalog.ts) and handed to the browser, which calls registerServices()
 // before the storefront UI starts. Every catalog consumer reads through these exports.
-// (The original records live in scripts/seed/catalog-data.ts and are only used to seed the database.)
+// (The rows live in the Supabase table public.products — seed: supabase/seed.sql.)
 import type { BusinessServiceId, PersonalServiceId, Service, ServiceId } from './types';
 
 let byId = new Map<ServiceId, Service>();

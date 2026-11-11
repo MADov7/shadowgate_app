@@ -94,7 +94,7 @@ function CartRow({ service }: { service: Service }) {
 
 /**
  * Day 5 — "Pay now" with Stripe Checkout (TEST MODE). Only fixed-price (illustrative) services are paid online;
- * the browser sends slugs + quantities and the server prices them from MongoDB, creates the Checkout Session and
+ * the browser sends slugs + quantities and the server prices them from Supabase, creates the Checkout Session and
  * returns Stripe's hosted payment URL. Signed-out visitors are sent to Log in first (the order is saved to the account).
  */
 function PayNowBox({ payable, quantities, hasQuote }: { payable: Service[]; quantities: Partial<Record<ServiceId, number>>; hasQuote: boolean }) {

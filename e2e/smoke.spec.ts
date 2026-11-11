@@ -14,7 +14,7 @@ function collectErrors(page: Page): string[] {
 test('welcome gate: direct-services link bypasses the entrance and is remembered for the session', async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto('/?intro=1');
-  // Home reads the catalog from MongoDB Atlas on every request, so allow a little longer for the first paint.
+  // Home reads the catalog from Supabase on every request, so allow a little longer for the first paint.
   await expect(page.getByRole('button', { name: /enter shadow gate/i })).toBeVisible({ timeout: 20_000 });
   await page.getByRole('link', { name: /go directly to services/i }).or(page.getByRole('button', { name: /go directly to services/i })).first().click();
   await expect(page.locator('#catalog')).toBeInViewport({ timeout: 10_000 });

@@ -4,8 +4,8 @@
 
 A cinematic, scroll-driven storefront for a (fictional, classwork) cybersecurity company, in English and Arabic (RTL).
 Visitors travel through a 3D gateway, a threat radar and a service constellation, then shop in a real store:
-products from **MongoDB Atlas**, accounts with a signed **HttpOnly session cookie**, protected **My Orders**, and
-online payment with **Stripe Checkout in test mode**.
+products read live from a **Supabase** table, sign-up / log-in with **Supabase Auth**, per-user **My Orders**
+protected by **Row Level Security**, and online payment with **Stripe Checkout in test mode**.
 
 **Live (Vercel):** https://shadowgate-app.vercel.app · **Also on Netlify:** https://shadow-gate-storefront.netlify.app · **Author:** Soud Alkaban
 
@@ -14,20 +14,31 @@ online payment with **Stripe Checkout in test mode**.
 | Layer | What |
 |---|---|
 | App | Next.js 16 (App Router) + React 19, Tailwind v4, three.js / R3F for the experience |
-| Data | MongoDB Atlas via Mongoose — `products`, `users`, `orders` |
-| Auth | bcrypt password hashes, JWT in an HttpOnly `SameSite=Lax` cookie, server-side checks on every protected page/API |
+| Data | **Supabase** (Postgres) — tables `products` (public read) and `orders` (RLS: each user sees only their own rows) |
+| Auth | **Supabase Auth** (email + password) → server issues an HttpOnly `SameSite=Lax` session cookie; checked on every protected page/API |
 | Payments (Day 5) | Stripe Checkout, **test mode only** — server route creates the session, webhook saves paid orders |
 | Hosting | Vercel (imported from this GitHub repo — every push to `main` redeploys) and Netlify |
 
-## Day 5 — payments (Stripe test mode)
-
-How the class brief maps onto this project (no Supabase / Replit here):
+## Day 4 — database (Supabase)
 
 | Brief | Shadow Gate |
 |---|---|
-| Supabase Edge Function starts the payment | `POST /api/checkout` (Next.js server route) — needs a login, prices read from MongoDB |
-| Stripe secret key in Supabase Secrets | `STRIPE_SECRET_KEY` in server env only (`.env.local` / Netlify env vars) — never in the browser |
-| Save the order in the `orders` table after payment | MongoDB `orders` collection: saved with `status: "paid"` only after Stripe confirms the session |
+| Supabase project + keys kept out of the code | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` in server env only (`.env.local` / Netlify / Vercel) |
+| `products` table with sample products | `public.products` — 12 services (English + Arabic). Schema: [`supabase/migrations/`](supabase/migrations/20261111000000_shadow_gate.sql), data: [`supabase/seed.sql`](supabase/seed.sql) |
+| Store reads products from Supabase, not hardcoded | [`lib/catalog.ts`](lib/catalog.ts) → `GET {SUPABASE_URL}/rest/v1/products` on every page render (no catalog in the app code) |
+| Sign-up / log-in with Supabase Auth | [`app/api/auth/signup`](app/api/auth/signup/route.ts) creates the Supabase Auth user; [`app/api/auth/login`](app/api/auth/login/route.ts) checks the password with Supabase Auth (`grant_type=password`) |
+| Bonus: per-user table | `public.orders` with RLS policy `auth.uid() = user_id`; the server also filters every query by the signed-in user's id |
+| Bonus: user in the navbar | The nav shows the signed-in user's name (Supabase `user_metadata.name`, or the email's name part if none) |
+
+Quick setup: Supabase → **SQL Editor** → paste [`supabase/setup.sql`](supabase/setup.sql) (schema + seed) → **Run**.
+
+## Day 5 — payments (Stripe test mode)
+
+| Brief | Shadow Gate |
+|---|---|
+| Supabase Edge Function starts the payment | `POST /api/checkout` (Next.js server route) — needs a login, prices read from the Supabase `products` table |
+| Stripe secret key in Supabase Secrets | `STRIPE_SECRET_KEY` in server env only (`.env.local` / Netlify / Vercel env vars) — never in the browser |
+| Save the order in the `orders` table after payment | Supabase `orders` table: saved with `status = 'paid'` only after Stripe confirms the session |
 | Show "Paid ✓" without reloading | `/checkout/success` confirms with `POST /api/checkout/confirm` from the page and shows **تم الدفع ✓ / Payment successful ✓** |
 
 Flow: **Cart → Pay now → Stripe Checkout (test) → /checkout/success (order saved as Paid) → My Orders**.
@@ -37,7 +48,7 @@ Cancelling on Stripe returns to `/checkout/cancel` (nothing charged, nothing sav
 - The browser sends slugs + quantities only. Amounts, currency, user id and the paid lines are written by the
   server into the Checkout Session; after payment the server checks Stripe's `amount_total` against them.
 - `POST /api/stripe/webhook` (bonus) verifies the `Stripe-Signature` HMAC over the raw body (400 if invalid) and saves
-  the paid order too. `stripeSessionId` is unique, so the webhook and the success page never create two orders.
+  the paid order too. `orders.stripe_session_id` is unique, so the webhook and the success page never create two orders.
 - Live keys (`sk_live_…`) are refused — classwork runs in test mode only.
 - No `stripe` npm package: the server calls Stripe's REST API with `fetch` and verifies webhooks with `node:crypto`.
 
@@ -55,7 +66,9 @@ Copy `.env.example` to `.env.local` and fill in the values (never commit it — 
 
 | Variable | Used for |
 |---|---|
-| `MONGODB_URI` | MongoDB Atlas connection string (server only) |
+| `SUPABASE_URL` | `https://<project-ref>.supabase.co` |
+| `SUPABASE_ANON_KEY` | Publishable / anon key (public reads + password log-in; RLS applies) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret / service_role key — server only (creates accounts, reads/writes orders) |
 | `JWT_SECRET` | Signs the session cookie (server only) |
 | `STRIPE_SECRET_KEY` | Stripe **test** secret key `sk_test_…` (server only) |
 | `STRIPE_WEBHOOK_SECRET` | Signing secret `whsec_…` of the `/api/stripe/webhook` endpoint (server only) |
@@ -74,15 +87,15 @@ Open http://localhost:3190.
 |---|---|
 | `npm run dev` | Next.js dev server (port 3190) |
 | `npm run build` / `npm start` | Production build / serve it (port 4190) |
-| `npm run seed` | Upserts the 12 services into MongoDB |
-| `npm test` | Unit tests (Vitest): validation, sessions, Stripe signature/metadata/fulfilment rules, i18n parity… |
+| `npm run seed` | Upserts the 12 services into the Supabase `products` table (or paste `supabase/seed.sql`) |
+| `npm run db:check` | Read-only Supabase check: settings present, product count, anonymous visitors see 0 orders |
+| `npm test` | Unit tests (Vitest): validation, sessions, Supabase helpers, Stripe signature/metadata/fulfilment rules, i18n… |
 | `npm run test:e2e` | End-to-end tests (Playwright, desktop + mobile) against the production build |
-| `npm run db:report -- --html` | Read-only report of the live collections |
 
 ## Deploy
 
-Netlify builds from this repository (`netlify.toml`: `npm run build:netlify`). Set the four variables above in
-**Site configuration → Environment variables**. In Stripe (test mode) add a webhook endpoint
+Vercel (imported from GitHub) and Netlify (`netlify.toml`: `npm run build:netlify`) both build this repository. Set
+the variables above in each host's **Environment variables**. In Stripe (test mode) add a webhook endpoint
 `https://<site>/api/stripe/webhook` for `checkout.session.completed` and put its signing secret in
 `STRIPE_WEBHOOK_SECRET`.
 

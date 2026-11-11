@@ -100,7 +100,7 @@ function BookingFlow({ initialService, onClose }: { initialService: ServiceId; o
       requestAnimationFrame(() => focusControl('bk-errors'));
       return;
     }
-    // Signed in → save the booking as a pending order in MongoDB first; confirm only after the write succeeds.
+    // Signed in → save the booking as a pending order in Supabase first; confirm only after the write succeeds.
     if (useSession.getState().status === 'signed-in') {
       setBusy(true);
       try {

@@ -256,7 +256,7 @@ function RequestForm({
       requestAnimationFrame(() => focusControl(summaryId));
       return;
     }
-    // Signed in → a real pending order in MongoDB (server validates products + quantities and derives prices).
+    // Signed in → a real pending order in Supabase (server validates products + quantities and derives prices).
     // The confirmation is shown ONLY after the server confirms the write (201).
     if (useSession.getState().status === 'signed-in') {
       const basket = useBasket.getState();
@@ -641,7 +641,7 @@ function RequestForm({
 }
 
 // ---------------------------------------------------------------------------------------------
-/** Shown only after POST /api/orders returned 201 (the order is stored in MongoDB). */
+/** Shown only after POST /api/orders returned 201 (the order is stored in the Supabase orders table). */
 function OrderConfirmation({ order, onNew }: { order: PublicOrder; onNew: () => void }) {
   const { t, lang } = useI18n();
   const code = `SG-${order.id.slice(-6).toUpperCase()}`;

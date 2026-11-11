@@ -1,7 +1,9 @@
-// Login session token (JWT). Signed with JWT_SECRET (server environment only), sent to the browser only inside an
-// HttpOnly cookie, and verified on the server for every protected page and API route.
+// Login session token (JWT). Issued only after Supabase Auth has accepted the email + password (lib/supabase.ts →
+// signInWithPassword); its subject is the Supabase Auth user id. Signed with JWT_SECRET (server environment only),
+// sent to the browser only inside an HttpOnly cookie, and verified on the server for every protected page and API route.
 import jwt from 'jsonwebtoken';
 import { MissingSecretError } from './errors';
+import { isUuid } from './supabaseCore';
 
 export const SESSION_COOKIE = 'sg_session';
 /** Session lifetime: 7 days (cookie Max-Age and JWT expiry match). */
@@ -27,7 +29,8 @@ export function verifySession(token: string | null | undefined): SessionCheck {
   if (!token) return { ok: false, reason: 'missing' };
   try {
     const payload = jwt.verify(token, secret(), { algorithms: ['HS256'] });
-    if (typeof payload === 'string' || typeof payload.sub !== 'string' || !/^[a-f0-9]{24}$/i.test(payload.sub)) {
+    // The subject is the Supabase Auth user id (a UUID).
+    if (typeof payload === 'string' || !isUuid(payload.sub)) {
       return { ok: false, reason: 'invalid' };
     }
     return { ok: true, userId: payload.sub, name: typeof payload.name === 'string' ? payload.name : '' };

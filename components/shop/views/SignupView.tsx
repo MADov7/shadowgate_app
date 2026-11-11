@@ -43,7 +43,7 @@ export default function SignupView({ next }: { products: Service[]; next: string
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      const data = (await res.json().catch(() => ({}))) as { error?: string; fields?: FieldErrors };
+      const data = (await res.json().catch(() => ({}))) as { error?: string; code?: string; fields?: FieldErrors };
       if (res.status === 201) {
         useUI.getState().toast({ tone: 'success', message: t('auth.signupSuccess') });
         // Prefill the login email via sessionStorage (personal data stays out of the URL).
@@ -59,6 +59,10 @@ export default function SignupView({ next }: { products: Service[]; next: string
       if (data.fields && Object.keys(data.fields).length) {
         setErrors(data.fields);
         requestAnimationFrame(() => focusControl('signup-errors'));
+      } else if (res.status === 429) {
+        setFormError(t('auth.errTooMany'));
+      } else if (data.code === 'weak_password') {
+        setFormError(t('auth.errPasswordWeak'));
       } else {
         setFormError(res.status === 503 ? t('auth.errUnavailable') : t('auth.errServer'));
       }

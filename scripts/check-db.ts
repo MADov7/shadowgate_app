@@ -1,35 +1,30 @@
-// Step 3 check: connects to MongoDB Atlas with MONGODB_URI, builds the model indexes (unique email, unique slug)
-// and prints the database name, collections, indexes and document counts. Never prints the connection string.
+// Read-only check of the Supabase setup: settings present, tables reachable, product count, RLS on orders.
 //   npm run db:check
-import mongoose from 'mongoose';
-import { connectDB, MissingSecretError } from '../lib/db';
-import { User } from '../models/User';
-import { Product } from '../models/Product';
-import { Order } from '../models/Order';
+// Prints yes/no and counts only — never a key, URL or row content.
+import { selectRows, supabaseStatus } from '../lib/supabaseRest';
 
+const status = supabaseStatus();
+console.log(`SUPABASE_URL: ${status.url ? 'set' : 'MISSING'} · anon key: ${status.anonKey} · service key: ${status.serviceKey}`);
+const publicKey = status.anonKey === 'ready';
 try {
-  const conn = await connectDB();
-  await Promise.all([User.syncIndexes(), Product.syncIndexes(), Order.syncIndexes()]);
-  const host = conn.connection.host ?? '';
-  console.log(`Connected ✓  database "${conn.connection.name}" on ${host.endsWith('.mongodb.net') ? 'MongoDB Atlas' : 'a MongoDB server'}`);
-  const collections = (await conn.connection.db!.listCollections().toArray()).map((c) => c.name).sort();
-  console.log('Collections:', collections.join(', ') || '(none yet)');
-  for (const [name, m] of [
-    ['users', User],
-    ['products', Product],
-    ['orders', Order],
-  ] as const) {
-    const indexes = (await m.collection.indexes()).map((i) => `${Object.keys(i.key).join('+')}${i.unique ? ' (unique)' : ''}`);
-    console.log(`${name}: ${await m.countDocuments()} document(s) · indexes: ${indexes.join(', ')}`);
+  const products = await selectRows<{ slug: string }>('products', { select: 'slug' }, 'anon');
+  console.log(`products (${publicKey ? 'public read through RLS' : 'read with the server key — no public key set'}): ${products.length}`);
+  if (status.serviceKey === 'ready') {
+    const orders = await selectRows<{ id: string }>('orders', { select: 'id' }, 'service');
+    console.log(`orders (server key): ${orders.length}`);
   }
-} catch (error) {
-  if (error instanceof MissingSecretError) {
-    console.error(`STOP: ${error.key} is not set. Add it to .env.local (local) and to Netlify environment variables (production).`);
+  if (publicKey) {
+    const anonOrders = await selectRows<{ id: string }>('orders', { select: 'id' }, 'anon');
+    console.log(`orders visible to an anonymous visitor (must be 0): ${anonOrders.length}`);
+    if (anonOrders.length > 0) {
+      console.error('RLS PROBLEM: anonymous visitors can read orders.');
+      process.exitCode = 1;
+    }
   } else {
-    const e = error as Error;
-    console.error(`Connection failed: ${e.name}: ${e.message.replace(/mongodb(\+srv)?:\/\/[^\s]+/g, '[hidden URI]')}`);
+    console.log('RLS probe skipped: set SUPABASE_ANON_KEY (publishable key) to test what anonymous visitors can see.');
   }
+  if (!process.exitCode) console.log('Supabase OK ✓');
+} catch (error) {
+  console.error(`Supabase check failed: ${(error as Error).name}: ${(error as Error).message}`);
   process.exitCode = 1;
-} finally {
-  await mongoose.disconnect();
 }

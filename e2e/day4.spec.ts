@@ -2,7 +2,7 @@ import { expect, test, type APIRequestContext, type Browser, type BrowserContext
 
 // Day 4 — accounts, sessions and orders, checked against the production build (npm run build first).
 //
-// REQUIRES a real database: MONGODB_URI (and JWT_SECRET) must be set for the server started by playwright.config.ts,
+// REQUIRES a real database: SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY (and JWT_SECRET) must be set for the server started by playwright.config.ts,
 // and the catalog must be seeded first (npm run seed) — the order tests use the "consultation" (illustrative, 49)
 // and "personal-accounts" products. Every test creates its own accounts with unique emails, so runs never collide.
 

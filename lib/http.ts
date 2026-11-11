@@ -1,8 +1,8 @@
 import 'server-only';
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 import { HttpError, MissingSecretError } from './errors';
 import { StripeApiError, StripeKeyError } from './stripe';
+import { SupabaseError, SupabaseUnavailableError } from './supabase';
 
 // Consistent JSON responses and error handling for every API route (status codes 200/201/400/401/404/409/500/503).
 // Error bodies contain a safe message only — never a stack trace, connection string, secret or password hash.
@@ -22,29 +22,11 @@ export async function readJson(request: Request): Promise<unknown> {
 function safeLog(error: unknown) {
   const e = error as Error;
   const message = String(e?.message ?? error)
-    .replace(/mongodb(\+srv)?:\/\/[^\s]+/g, '[hidden URI]')
     .replace(/\b(sk|rk)_(test|live)_[A-Za-z0-9]+/g, '[hidden key]')
-    .replace(/\bwhsec_[A-Za-z0-9]+/g, '[hidden secret]');
+    .replace(/\bwhsec_[A-Za-z0-9]+/g, '[hidden secret]')
+    .replace(/\bsb_(secret|publishable)_[A-Za-z0-9_-]+/g, '[hidden key]')
+    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[hidden token]');
   console.error(`[api] ${e?.name ?? 'Error'}: ${message}`);
-}
-
-// Driver/network errors that mean "MongoDB cannot be reached right now" (classified by name/code, not message text).
-const DB_DOWN_NAMES = new Set([
-  'MongooseServerSelectionError',
-  'MongoServerSelectionError',
-  'MongoNetworkError',
-  'MongoNetworkTimeoutError',
-  'MongoTopologyClosedError',
-  'MongoNotConnectedError',
-  'MongoServerClosedError',
-]);
-const DB_DOWN_CODES = new Set(['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET', 'ETIMEDOUT', 'ETIMEOUT', 'EAI_AGAIN', 'ESERVFAIL']);
-
-function isDatabaseUnavailable(error: unknown): boolean {
-  const e = error as { name?: string; code?: string; cause?: unknown } | null;
-  if (!e) return false;
-  if (DB_DOWN_NAMES.has(e.name ?? '') || DB_DOWN_CODES.has(String(e.code ?? ''))) return true;
-  return e.cause ? isDatabaseUnavailable(e.cause) : false;
 }
 
 const UNAUTHORIZED = {
@@ -52,6 +34,13 @@ const UNAUTHORIZED = {
   invalid: 'Your session is not valid. Please log in again.',
   expired: 'Your session has expired. Please log in again.',
 } as const;
+
+/** 429 with Retry-After (sign-up / log-in throttling, or Supabase Auth's own rate limit). */
+export function tooManyRequests(retryAfterSeconds = 60): NextResponse {
+  return json({ error: 'Too many attempts. Please wait a minute and try again.', code: 'rate_limited' }, 429, {
+    headers: { 'Retry-After': String(Math.max(1, Math.round(retryAfterSeconds))) },
+  });
+}
 
 /** 401 with the session problem ("missing" | "invalid" | "expired") so the UI can show the right message. */
 export function unauthorized(reason: keyof typeof UNAUTHORIZED): NextResponse {
@@ -111,10 +100,25 @@ export function errorResponse(error: unknown): NextResponse {
     safeLog(error); // status + Stripe error type/code only — never the key or the request body
     return json({ error: 'The payment service is not available right now. Please try again in a moment.', code: 'payments_unavailable' }, 502);
   }
-  if (error instanceof mongoose.Error.ValidationError) return json({ error: 'Some values are not valid.' }, 400);
-  if (isDatabaseUnavailable(error)) {
+  if (error instanceof SupabaseUnavailableError || (error instanceof SupabaseError && (error.status === 0 || error.status >= 500))) {
     safeLog(error);
     return json({ error: 'The database is temporarily unavailable. Please try again.' }, 503);
+  }
+  if (error instanceof SupabaseError && (error.status === 401 || error.status === 403 || error.code === 'PGRST205' || error.code === '42P01')) {
+    // Wrong/missing key or the tables were not created yet: a configuration problem, not the visitor's fault.
+    safeLog(error);
+    return json({ error: 'The store server is not fully configured yet. Please try again later.' }, 503);
+  }
+  if (error instanceof SupabaseError && (error.status === 429 || error.code === 'over_request_rate_limit')) {
+    safeLog(error);
+    return tooManyRequests(60);
+  }
+  if (error instanceof SupabaseError && error.code === '23503') {
+    // orders.user_id → auth.users: the account behind a still-valid session cookie was deleted.
+    return json({ error: 'Your session is not valid. Please log in again.', reason: 'invalid' }, 401);
+  }
+  if (error instanceof SupabaseError && error.status === 400 && /^(22|23)/.test(error.code)) {
+    return json({ error: 'Some values are not valid.' }, 400);
   }
   safeLog(error);
   return json({ error: 'Something went wrong on our side. Please try again.' }, 500);

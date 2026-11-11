@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 // POST /api/checkout/confirm — { sessionId } → { status: 'paid', order } | { status: 'processing' | 'open' | 'expired' }
 // Used by /checkout/success (no page reload): the server re-reads the session FROM STRIPE, checks it belongs to the
-// signed-in user (another account's session → 404) and, once paid, saves the order in MongoDB with status "paid".
+// signed-in user (another account's session → 404) and, once paid, saves the order in Supabase with status "paid".
 export async function POST(request: NextRequest) {
   try {
     if (!isSameOrigin(request)) return json({ error: 'Cross-site requests are not allowed.' }, 403);

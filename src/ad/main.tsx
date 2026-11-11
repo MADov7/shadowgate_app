@@ -6,7 +6,7 @@ import '@fontsource-variable/jetbrains-mono';
 import './ad.css';
 import { AdApp } from './AdApp';
 import { registerServices } from '../data/services';
-import { SEED_SERVICES } from '../../scripts/seed/catalog-data';
+import { SEED_SERVICES } from '../test/fixtures/catalog.fixture';
 
 registerServices(SEED_SERVICES);
 

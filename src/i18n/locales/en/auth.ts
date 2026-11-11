@@ -37,6 +37,8 @@ export const authEn = {
   errInvalidCredentials: 'Incorrect email or password.',
   errNetwork: 'Could not reach the server. Check your connection and try again.',
   errServer: 'Something went wrong on our side. Please try again.',
+  errTooMany: 'Too many attempts. Please wait a minute and try again.',
+  errPasswordWeak: 'Please choose a stronger password — mix letters, numbers and symbols.',
   signupSuccess: 'Account created. You can log in now.',
   loginSuccess: 'Welcome, {name}!',
   sessionExpired: 'Your session has expired. Please log in again.',

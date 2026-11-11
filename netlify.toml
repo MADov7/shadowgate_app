@@ -9,7 +9,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Server secrets (MONGODB_URI, JWT_SECRET) are NOT stored here. Add them in the Netlify UI:
+# Server secrets (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, JWT_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET) are NOT stored here. Add them in the Netlify UI:
 # Project configuration → Environment variables, scope "Functions" (and "Builds"), marked "Contains secret values".
 
 [[headers]]

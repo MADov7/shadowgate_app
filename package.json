@@ -19,8 +19,7 @@
     "seed": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/seed.ts",
     "images:products": "node --import tsx scripts/gen-product-images.tsx",
     "build:netlify": "next build --webpack",
-    "demo:atlas-edit": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/demo-atlas-edit.ts",
-    "db:report": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx scripts/db-report.ts"
+    "seed:sql": "node --import tsx scripts/seed-sql.ts"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
@@ -29,12 +28,10 @@
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "@react-three/postprocessing": "^3.2.2",
-    "bcryptjs": "^3.0.3",
     "gsap": "^3.15.0",
     "jsonwebtoken": "^9.0.3",
     "lenis": "^1.3.27",
     "lucide-react": "^1.66.0",
-    "mongoose": "^9.12.0",
     "next": "^16.4.5",
     "postprocessing": "^6.39.6",
     "react": "^19.3.1",

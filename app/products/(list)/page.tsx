@@ -5,7 +5,7 @@ import { getSessionUser } from '@/lib/auth';
 import DbNotice from '@/components/shop/DbNotice';
 
 export const metadata: Metadata = { title: 'Products — SHADOW GATE' };
-// Always read fresh products from MongoDB.
+// Always read fresh products from Supabase.
 export const dynamic = 'force-dynamic';
 
 export default async function ProductsPage() {

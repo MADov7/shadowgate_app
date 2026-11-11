@@ -1,24 +1,22 @@
 import 'server-only';
-// Day 5 — Stripe Checkout (TEST MODE) for the cart, on top of the Day 4 store (MongoDB Atlas + session cookie).
+// Day 5 — Stripe Checkout (TEST MODE) for the cart, on top of the Day 4 store (Supabase table + Supabase Auth).
 // Class brief → this project:  "Supabase Edge Function" → the Next.js server route POST /api/checkout;
 //                              "Supabase Secrets"       → STRIPE_SECRET_KEY in the server environment;
-//                              "orders table"           → the MongoDB `orders` collection (models/Order.ts).
+//                              "orders table"           → the Supabase table `public.orders`.
 //
 // Flow: the cart sends product slugs + quantities → the server prices them FROM THE DATABASE and creates a Stripe
 // Checkout Session (amounts, user and paid lines are written by the server) → the visitor pays on Stripe's page →
 // Stripe redirects to /checkout/success, which asks POST /api/checkout/confirm; the server re-reads the session
 // from Stripe and, once it is paid, saves the order with status "paid". The webhook (bonus) does the same from
-// Stripe's side. stripeSessionId is unique, so whichever arrives first saves the order and the other reuses it.
-import mongoose from 'mongoose';
-import { connectDB } from './db';
+// Stripe's side. orders.stripe_session_id is UNIQUE, so whichever arrives first saves the order and the other reuses it.
+import { getProductRows, productName, productPrice, type ProductRow } from './catalog';
 import { HttpError } from './errors';
-import { publicOrder } from './orders';
+import { publicOrder, type OrderItemRow, type OrderRow } from './orders';
 import { createCheckoutSession, retrieveCheckoutSession, StripeApiError, type CheckoutSession } from './stripe';
 import { cartTotalCents, decodeCartMetadata, encodeCartMetadata, METADATA_VALUE_MAX, toCents, type PaidLine } from './stripeCore';
+import { getAuthUser, insertRow, selectRows, SupabaseError } from './supabase';
+import { isUniqueViolation, isUuid } from './supabaseCore';
 import type { CheckoutInput } from './validators';
-import { Order, type OrderFields } from '@/models/Order';
-import { Product, type ProductFields } from '@/models/Product';
-import { User } from '@/models/User';
 import type { PublicOrder } from '@/src/data/orderTypes';
 
 export const CHECKOUT_CURRENCY = 'usd';
@@ -28,26 +26,16 @@ export const META_ITEMS = 'sg_items';
 /** How long a Checkout Session stays payable (Stripe allows 30 minutes – 24 hours). */
 const SESSION_LIFETIME_SECONDS = 60 * 60;
 
-type ProductDoc = ProductFields & { _id: mongoose.Types.ObjectId };
-type OrderDoc = OrderFields & { _id: unknown; createdAt?: Date };
-
 /** Only fixed (illustrative) prices can be paid online; quote-based services are priced after a scoping call. */
-export function isPayableProduct(p: Pick<ProductFields, 'pricing' | 'price' | 'requiresAuthorization'>): boolean {
-  return p.pricing?.kind === 'illustrative' && typeof p.price === 'number' && p.price > 0 && !p.requiresAuthorization;
-}
-
-function productName(p: ProductDoc) {
-  return { en: p.content?.name?.en || p.name, ar: p.content?.name?.ar ?? '' };
+export function isPayableProduct(p: Pick<ProductRow, 'pricing_kind' | 'price' | 'requires_authorization'>): boolean {
+  return p.pricing_kind === 'illustrative' && productPrice(p) > 0 && !p.requires_authorization;
 }
 
 /** Creates the Stripe Checkout Session for the signed-in user's payable cart lines. Returns Stripe's hosted URL. */
 export async function startCheckout(userId: string, input: CheckoutInput, origin: string): Promise<{ url: string; sessionId: string }> {
-  await connectDB();
+  if (!isUuid(userId)) throw new HttpError(401, 'Your session is not valid. Please log in again.', { reason: 'invalid' });
   const slugs = input.items.map((i) => i.slug);
-  const [user, products] = await Promise.all([
-    User.findById(userId).select('email').lean<{ email: string } | null>(),
-    Product.find({ slug: { $in: slugs } }).lean<ProductDoc[]>(),
-  ]);
+  const [user, products] = await Promise.all([getAuthUser(userId), getProductRows(slugs)]);
   if (!user) throw new HttpError(401, 'Your session is not valid. Please log in again.', { reason: 'invalid' });
   const bySlug = new Map(products.map((p) => [p.slug, p]));
   const unknown = slugs.filter((s) => !bySlug.has(s));
@@ -57,8 +45,8 @@ export async function startCheckout(userId: string, input: CheckoutInput, origin
     throw new HttpError(400, 'Only fixed-price services can be paid online. Send quote-based services with the request form.', { notPayable });
   }
 
-  // Unit prices come from MongoDB (Product.price, whole USD) — never from the browser.
-  const lines: PaidLine[] = input.items.map((i) => ({ slug: i.slug, quantity: i.quantity, unitCents: toCents(bySlug.get(i.slug)!.price) }));
+  // Unit prices come from Supabase (products.price, USD) — never from the browser.
+  const lines: PaidLine[] = input.items.map((i) => ({ slug: i.slug, quantity: i.quantity, unitCents: toCents(productPrice(bySlug.get(i.slug)!)) }));
   const itemsMeta = encodeCartMetadata(lines);
   if (itemsMeta.length > METADATA_VALUE_MAX) throw new HttpError(400, 'Too many services for one payment.');
 
@@ -99,7 +87,11 @@ export type FulfilResult =
   | { ok: true; order: PublicOrder; created: boolean }
   | { ok: false; reason: 'not_paid' | 'livemode' | 'mismatch' | 'unknown_product' };
 
-let indexesReady: Promise<unknown> | null = null;
+/** Existing order for a Checkout Session (idempotency), read with the server key. */
+async function orderForSession(sessionId: string): Promise<OrderRow | null> {
+  const rows = await selectRows<OrderRow>('orders', { select: '*', stripe_session_id: `eq.${sessionId}`, limit: '1' }, 'service');
+  return rows[0] ?? null;
+}
 
 /**
  * Saves the paid order for a Checkout Session (idempotent: one order per session id). Called by the success-page
@@ -112,58 +104,43 @@ export async function fulfillCheckoutSession(session: CheckoutSession): Promise<
   if (session.payment_status !== 'paid') return { ok: false, reason: 'not_paid' };
   const userId = session.metadata?.[META_USER];
   const lines = decodeCartMetadata(session.metadata?.[META_ITEMS]);
-  if (!userId || !mongoose.isValidObjectId(userId) || session.client_reference_id !== userId || !lines) return { ok: false, reason: 'mismatch' };
+  if (!userId || !isUuid(userId) || session.client_reference_id !== userId || !lines) return { ok: false, reason: 'mismatch' };
   if ((session.currency ?? '').toLowerCase() !== CHECKOUT_CURRENCY || session.amount_total !== cartTotalCents(lines)) {
     return { ok: false, reason: 'mismatch' };
   }
 
-  await connectDB();
-  // Make sure the unique stripeSessionId index exists before relying on it (built once per server process).
-  indexesReady ??= Order.init().catch((e: Error) => {
-    indexesReady = null;
-    console.error(`[checkout] index init failed: ${e?.name ?? 'Error'}`);
-  });
-  await indexesReady;
-
-  const existing = await Order.findOne({ stripeSessionId: session.id }).lean<OrderDoc>();
+  const existing = await orderForSession(session.id);
   if (existing) return { ok: true, order: publicOrder(existing), created: false };
 
-  const products = await Product.find({ slug: { $in: lines.map((l) => l.slug) } }).lean<ProductDoc[]>();
+  const products = await getProductRows(lines.map((l) => l.slug));
   const bySlug = new Map(products.map((p) => [p.slug, p]));
   if (lines.some((l) => !bySlug.has(l.slug))) return { ok: false, reason: 'unknown_product' };
 
-  const items = lines.map(
-    (l) =>
-      ({
-        product: bySlug.get(l.slug)!._id,
-        quantity: l.quantity,
-        price: l.unitCents / 100, // the unit price Stripe charged
-        pricingKind: 'illustrative',
-        slug: l.slug,
-        name: productName(bySlug.get(l.slug)!),
-      }) as OrderFields['items'][number],
-  );
+  const items: OrderItemRow[] = lines.map((l) => {
+    const p = bySlug.get(l.slug)!;
+    return { product_id: p.id, slug: l.slug, name: productName(p), quantity: l.quantity, price: l.unitCents / 100, pricing_kind: 'illustrative' };
+  });
   const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent?.id ?? null);
   try {
-    const doc = await Order.create({
-      user: new mongoose.Types.ObjectId(userId),
+    const row = await insertRow<OrderRow>('orders', {
+      user_id: userId,
       items,
       total: session.amount_total / 100,
-      hasQuoteItems: false,
+      has_quote_items: false,
       status: 'paid',
-      requestType: products.every((p) => p.audience === 'personal') ? 'personal' : 'business',
-      paymentMethod: 'stripe',
-      stripeSessionId: session.id,
-      paymentIntentId,
+      request_type: products.every((p) => p.audience === 'personal') ? 'personal' : 'business',
+      payment_method: 'stripe',
+      stripe_session_id: session.id,
+      payment_intent_id: paymentIntentId,
       currency: CHECKOUT_CURRENCY,
-      amountPaidCents: session.amount_total,
-      paidAt: new Date(),
+      amount_paid_cents: session.amount_total,
+      paid_at: new Date().toISOString(),
     });
-    return { ok: true, order: publicOrder(doc.toObject() as OrderDoc), created: true };
+    return { ok: true, order: publicOrder(row), created: true };
   } catch (error) {
     // The webhook and the success page arrived at the same moment: the other one already saved it.
-    if ((error as { code?: number })?.code === 11000) {
-      const again = await Order.findOne({ stripeSessionId: session.id }).lean<OrderDoc>();
+    if (error instanceof SupabaseError && isUniqueViolation(error.status, error.body)) {
+      const again = await orderForSession(session.id);
       if (again) return { ok: true, order: publicOrder(again), created: false };
     }
     throw error;

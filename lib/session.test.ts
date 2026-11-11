@@ -3,7 +3,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { signSession, verifySession } from './session';
 import { MissingSecretError } from './errors';
 
-const USER = { id: '64b7f0c2a1b2c3d4e5f60718', name: 'Test Student' };
+const USER = { id: '3f6c1a2e-8b4d-4c1e-9a7f-2b5d8e9c0a11', name: 'Test Student' };
 
 describe('session token (JWT)', () => {
   const original = process.env.JWT_SECRET;

@@ -1,6 +1,6 @@
 'use client';
 
-// Client entry points for the store pages. The server page loads the data (products from MongoDB, the signed-in
+// Client entry points for the store pages. The server page loads the data (products from Supabase, the signed-in
 // user from the verified cookie, their orders) and passes it in; the interactive UI (shared basket, filters, toasts,
 // bilingual text from the visitor's saved language) then runs in the browser, exactly like the home experience.
 // ShopSkeleton shows meanwhile.

@@ -7,10 +7,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const fakeKey = (kind: string, mode: string, rest: string) => [kind, mode, rest].join('_');
 
 vi.mock('server-only', () => ({}));
-vi.mock('./db', () => ({ connectDB: vi.fn(async () => { throw new Error('the database must not be reached in these tests'); }) }));
+vi.mock('./supabase', async (orig) => {
+  const real = await orig<typeof import('./supabase')>();
+  const unreachable = vi.fn(async () => {
+    throw new Error('the database must not be reached in these tests');
+  });
+  return { ...real, selectRows: unreachable, insertRow: unreachable, getAuthUser: unreachable };
+});
 
-const USER = '6650f0c2a1b2c3d4e5f60718';
-const OTHER = '6650f0c2a1b2c3d4e5f60719';
+const USER = '3f6c1a2e-8b4d-4c1e-9a7f-2b5d8e9c0a11';
+const OTHER = '7a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';
 
 function paidSession(over: Record<string, unknown> = {}) {
   return {
@@ -74,10 +80,10 @@ describe('lib/stripe — key handling', () => {
 describe('lib/checkout — fulfilment checks (before any database write)', () => {
   it('only fixed-price services without an authorization requirement are payable', async () => {
     const { isPayableProduct } = await import('./checkout');
-    expect(isPayableProduct({ pricing: { kind: 'illustrative' }, price: 49, requiresAuthorization: false } as never)).toBe(true);
-    expect(isPayableProduct({ pricing: { kind: 'quote' }, price: 0, requiresAuthorization: false } as never)).toBe(false);
-    expect(isPayableProduct({ pricing: { kind: 'illustrative' }, price: 0, requiresAuthorization: false } as never)).toBe(false);
-    expect(isPayableProduct({ pricing: { kind: 'illustrative' }, price: 49, requiresAuthorization: true } as never)).toBe(false);
+    expect(isPayableProduct({ pricing_kind: 'illustrative', price: 49, requires_authorization: false })).toBe(true);
+    expect(isPayableProduct({ pricing_kind: 'quote', price: 0, requires_authorization: false })).toBe(false);
+    expect(isPayableProduct({ pricing_kind: 'illustrative', price: 0, requires_authorization: false })).toBe(false);
+    expect(isPayableProduct({ pricing_kind: 'illustrative', price: 49, requires_authorization: true })).toBe(false);
   });
 
   it('refuses unpaid, live-mode and tampered sessions', async () => {

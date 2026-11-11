@@ -1,9 +1,9 @@
-// SEED DATA ONLY — the original Shadow Gate service catalog (English + Arabic), used by scripts/seed.ts to
-// create/update the Product documents in MongoDB Atlas. The running storefront never imports this file: products
-// are loaded from the database (lib/catalog.ts). Also used by unit tests and the dev-only ad renderer.
+// TEST FIXTURE + SEED SOURCE ONLY — the original Shadow Gate service catalog (English + Arabic). The running store
+// never imports this file: products are read from the Supabase table public.products (lib/catalog.ts). It is used
+// to generate supabase/seed.sql (npm run seed:sql), by unit tests, and by the offline ad renderer.
 // Copy rules: no guarantees, no invented statistics; durations are estimates; personal sessions are guided and
 // never involve remote access to, or scanning of, the person's devices.
-import type { Service } from '../../src/data/types';
+import type { Service } from '../../data/types';
 
 const PER_SESSION = { en: 'per session', ar: 'للجلسة' };
 const PER_REVIEW = { en: 'per review', ar: 'للمراجعة' };

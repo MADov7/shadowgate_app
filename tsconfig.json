@@ -39,7 +39,6 @@
     "app",
     "components",
     "lib",
-    "models",
     "src",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"

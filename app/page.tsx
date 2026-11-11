@@ -3,7 +3,7 @@ import { getSessionUser } from '@/lib/auth';
 import { getProductsOrEmpty } from '@/lib/catalog';
 import DbNotice from '@/components/shop/DbNotice';
 
-// Always read fresh products from MongoDB (an edit in Atlas shows up on the next refresh).
+// Always read fresh products from Supabase (an edit in the Supabase table shows up on the next refresh).
 export const dynamic = 'force-dynamic';
 
 // Home: the existing cinematic Shadow Gate experience (welcome gate, scroll-driven 3D world, featured services,

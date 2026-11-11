@@ -1,6 +1,6 @@
 // /checkout/success — Stripe sends the visitor back here after paying. Without reloading the page, it asks the
 // server (POST /api/checkout/confirm) to re-check the session WITH STRIPE; once Stripe says "paid", the server saves
-// the order in MongoDB with status "paid" and this view shows "Payment successful ✓", then removes the paid
+// the order in Supabase with status "paid" and this view shows "Payment successful ✓", then removes the paid
 // services from the cart. If Stripe is still confirming, it checks again by itself a few times.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';

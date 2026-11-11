@@ -68,6 +68,7 @@ export default function LoginView({ next, notice, email }: Props) {
         return;
       }
       if (res.status === 401) setFormError(t('auth.errInvalidCredentials'));
+      else if (res.status === 429) setFormError(t('auth.errTooMany'));
       else if (data.fields && Object.keys(data.fields).length) {
         setErrors(data.fields);
         requestAnimationFrame(() => focusControl('login-errors'));

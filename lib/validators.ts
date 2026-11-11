@@ -110,7 +110,7 @@ export interface CheckoutInput {
 
 /**
  * Day 5 — "Pay now" from the cart: product slugs + quantities ONLY. Prices, totals, currency and the user id are
- * never accepted from the browser; the server reads prices from MongoDB and the user from the session cookie.
+ * never accepted from the browser; the server reads prices from Supabase and the user from the session cookie.
  */
 export function validateCheckoutInput(body: unknown): Result<CheckoutInput, 'items'> {
   const b = (body ?? {}) as Record<string, unknown>;

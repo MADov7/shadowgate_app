@@ -38,6 +38,8 @@ export const authAr: Record<keyof typeof authEn, string> = {
   errInvalidCredentials: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
   errNetwork: 'تعذّر الوصول إلى الخادم. تحقّق من اتصالك ثم حاول مرة أخرى.',
   errServer: 'حدث خطأ من جهتنا. حاول مرة أخرى.',
+  errTooMany: 'محاولات كثيرة جدًا. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.',
+  errPasswordWeak: 'يرجى اختيار كلمة مرور أقوى تجمع بين الحروف والأرقام والرموز.',
   signupSuccess: 'تم إنشاء الحساب. يمكنك تسجيل الدخول الآن.',
   loginSuccess: 'أهلًا {name}!',
   sessionExpired: 'انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.',

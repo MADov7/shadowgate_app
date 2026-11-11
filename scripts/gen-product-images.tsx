@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { renderToStaticMarkup } from 'react-dom/server';
 import * as Icons from 'lucide-react';
 import { createElement, type ComponentType, type SVGProps } from 'react';
-import { SEED_SERVICES } from './seed/catalog-data';
+import { SEED_SERVICES } from '../src/test/fixtures/catalog.fixture';
 
 const out = 'public/images/products';
 mkdirSync(out, { recursive: true });

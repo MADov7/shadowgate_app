@@ -14,7 +14,7 @@ const ShadowGateApp = dynamic(() => import('@/src/ClientApp'), {
 });
 
 export default function ExperienceClient({ products, sessionUser }: { products: Service[]; sessionUser: SessionUser | null }) {
-  // Products come from MongoDB and the user from the verified cookie (both loaded by the server page) —
+  // Products come from Supabase and the user from the verified cookie (both loaded by the server page) —
   // registered before the experience loads.
   useRegisterCatalog(products);
   useHydrateSession(sessionUser);
